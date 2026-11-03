@@ -1,0 +1,53 @@
+# gradle
+
+.gradle/
+build/
+out/
+classes/
+
+# eclipse
+
+*.launch
+
+# idea
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# vscode
+
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# macos
+
+*.DS_Store
+
+# fabric
+
+run/
+
+# java
+
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+
+# Geheimnisse – nie hochladen
+sync-key.txt
+minentimer.env
+*.env
+!*.env.example
+
+# fertige JARs gehören in die GitHub-Releases, nicht ins Repository
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Python
+__pycache__/

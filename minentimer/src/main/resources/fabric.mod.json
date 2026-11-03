@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "minentimer",
+	"version": "${version}",
+	"name": "Minen-Timer",
+	"description": "Respawn-Timer für Minen und Rohstoffvorkommen auf dem Minecraft-Server Ottonien, mit Overlay, Lehen-Gruppen und geteilten Timern. Inoffiziell, von Spielern für Spieler.",
+	"authors": ["yuyukey"],
+	"contact": {
+		"sources": "https://github.com/yuyukey/OttonienUtils",
+		"issues": "https://github.com/yuyukey/OttonienUtils/issues"
+	},
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["de.minentimer.MinenTimerClient"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

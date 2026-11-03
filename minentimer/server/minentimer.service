@@ -1,0 +1,18 @@
+[Unit]
+Description=Minen-Timer Sync-Server
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/minentimer.env
+ExecStart=/usr/bin/python3 /opt/minentimer/minentimer-server.py
+Restart=always
+RestartSec=5
+DynamicUser=yes
+StateDirectory=minentimer
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+# Tägliche Sicherung der Minen-Timer-Daten um 4:15 Uhr, 14 Tage aufbewahren.
+# Nach /etc/cron.d/minentimer-backup kopieren.
+15 4 * * * root mkdir -p /var/backups/minentimer && cp /var/lib/minentimer/data.json /var/backups/minentimer/data-$(date +\%F).json && find /var/backups/minentimer -name 'data-*.json' -mtime +14 -delete

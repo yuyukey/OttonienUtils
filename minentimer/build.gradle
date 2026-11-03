@@ -1,0 +1,63 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap'
+}
+
+// Der Sync-Schlüssel kommt nie ins Repository: aus sync-key.txt (nicht versioniert) oder MINENTIMER_SYNC_KEY.
+// Ohne Schlüssel baut die Mod trotzdem, nur der eingebaute Server lehnt dann ab.
+def syncKeyFile = file("sync-key.txt")
+def syncKey = System.getenv("MINENTIMER_SYNC_KEY") ?: (syncKeyFile.exists() ? syncKeyFile.text.trim() : "")
+
+base {
+	archivesName = project.archives_base_name
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+
+	inputs.property "syncKey", syncKey
+	filesMatching("minentimer-sync.properties") {
+		expand "syncKey": syncKey
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+	it.options.encoding = "UTF-8"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = "minentimer-test"
+		enableGameTests = false
+		enableClientGameTests = true
+		eula = true
+	}
+}
+
+// Jeder Testlauf startet ohne alte Minen und nur mit dem lokalen Testserver, nie mit dem echten Sync-Server
+tasks.named("runClientGameTest") {
+	doFirst {
+		def dir = file("build/run/clientGameTest/config/minentimer")
+		delete dir
+		dir.mkdirs()
+		new File(dir, "config.json").text = '{"configVersion":2,"syncEnabled":false,"syncUrl":"http://127.0.0.1:8765/","syncGroup":"test"}'
+	}
+}
