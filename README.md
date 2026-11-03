@@ -10,6 +10,8 @@ Kleine Client-Mods für den Minecraft-Rollenspiel-Server **Ottonien**, damit der
 |---|---|---|
 | [Minen-Timer](minentimer/README.md) | Respawn-Timer für Minen und Vorkommen mit Overlay, Lehen-Gruppen und Timern, die du mit deiner Gruppe teilst | siehe [Changelog](minentimer/CHANGELOG.md) |
 
+<a href="minentimer/README.md"><img src="minentimer/docs/screenshots/overlay-lehen-gruppiert.png" alt="Minen-Timer: Overlay mit Minen nach Lehen gruppiert" width="600"></a>
+
 Weitere Mods folgen.
 
 ## Installation

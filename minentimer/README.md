@@ -4,6 +4,21 @@ Client-Mod für **Minecraft 1.21.11 (Fabric)**, gemacht für den Rollenspiel-Ser
 
 > Inoffiziell: von Spielern für Spieler, kein Projekt des Ottonien-Teams. Teil von [OttonienUtils](../README.md).
 
+![Overlay mit Minen, nach Lehen gruppiert](docs/screenshots/overlay-lehen-gruppiert.png)
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Menü mit Lehen-Auswahl](docs/screenshots/menue-lehen.png) | ![Overlay mit nur einem Lehen](docs/screenshots/overlay-ein-lehen.png) |
+| **Menü (P):** Minen eines Lehens, mit ◀ / ▶ umschalten | **Overlay** für ein einzelnes Lehen, mit Hinweis beim Umschalten |
+| ![Minen umsortieren](docs/screenshots/menue-umsortieren.png) | ![Mine bearbeiten](docs/screenshots/mine-bearbeiten.png) |
+| **Umsortieren** mit ▲ / ▼, Timer und Restzeit pro Mine | **Mine bearbeiten:** Name, Position, Rohstoff, Größe, eigene Zeit, Lehen |
+| ![Einstellungen](docs/screenshots/einstellungen.png) | ![Overlay verschieben](docs/screenshots/overlay-verschieben.png) |
+| **Einstellungen** für Overlay, Ton und Meldungen | **Overlay verschieben:** einfach mit der Maus ziehen |
+
+*Die Bilder stammen aus einer Testwelt. Auf Ottonien sieht es genauso aus, nur mit echter Landschaft.*
+
 ## Installation
 
 1. Lade die neueste `minentimer-….jar` unter [Releases](https://github.com/yuyukey/OttonienUtils/releases) herunter und lege sie in deinen `mods`-Ordner. Ältere Versionen vorher löschen (bei Modrinth: Profil → Ordner öffnen → `mods`).
