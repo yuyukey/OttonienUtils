@@ -11,7 +11,7 @@ Client-Mod für **Minecraft 1.21.11 (Fabric)**, gemacht für den Rollenspiel-Ser
 | | |
 |---|---|
 | ![Menü mit Lehen-Auswahl](docs/screenshots/menue-lehen.png) | ![Overlay mit nur einem Lehen](docs/screenshots/overlay-ein-lehen.png) |
-| **Menü (P):** Minen eines Lehens, mit ◀ / ▶ umschalten | **Overlay** für ein einzelnes Lehen, mit Hinweis beim Umschalten |
+| **Menü (Numpad 3):** Minen eines Lehens, mit ◀ / ▶ umschalten | **Overlay** für ein einzelnes Lehen, mit Hinweis beim Umschalten |
 | ![Minen umsortieren](docs/screenshots/menue-umsortieren.png) | ![Mine bearbeiten](docs/screenshots/mine-bearbeiten.png) |
 | **Umsortieren** mit ▲ / ▼, Timer und Restzeit pro Mine | **Mine bearbeiten:** Name, Position, Rohstoff, Größe, eigene Zeit, Lehen |
 | ![Einstellungen](docs/screenshots/einstellungen.png) | ![Overlay verschieben](docs/screenshots/overlay-verschieben.png) |
@@ -36,7 +36,7 @@ Client-Mod für **Minecraft 1.21.11 (Fabric)**, gemacht für den Rollenspiel-Ser
 
 Alle Tasten lassen sich unter **Optionen → Steuerung → Tastenbelegung → Minen-Timer** ändern.
 
-**Im Menü (P):**
+**Im Menü (Numpad 3):**
 - **Linksklick** auf eine Mine → Timer starten
 - **Rechtsklick** → Timer zurücksetzen (bei Fehlklick)
 - **Shift + Mausrad** über einem laufenden Timer → ±5 Minuten, **Strg + Mausrad** → ±1 Minute (falls du zu spät markiert hast)
@@ -72,13 +72,15 @@ Wie der Server auf dem Ubuntu-Server eingerichtet wird, steht in [server/EINRICH
 
 Geteilt werden Timer **und** Minen (auch selbst angelegte). Bei gleichzeitigen Änderungen gewinnt die neueste. Der Abgleich passiert alle 10 Sekunden. Im Menü siehst du beim Darüberfahren, **wer** eine Mine markiert hat.
 
-Unter **P → Einstellungen → Mit anderen teilen…** kann man das Teilen ausschalten, einen anderen **Gruppen-Code** wählen (getrennte Timer, z. B. für einen anderen Clan) oder mit **Standard-Server** alles zurücksetzen. Statt des eigenen Servers funktioniert auch eine Firebase Realtime Database, deren URL man dort einträgt.
+**Gruppen-Code:** Bei der ersten Installation bekommst du einen eigenen, zufälligen Code wie `K7QX-M2PA-9TZD`. Damit deine Freunde dieselben Minen und Timer sehen, gib ihnen diesen Code. Sie tragen ihn bei sich ein, unter **Numpad 3 → Einstellungen → Mit anderen teilen…**. Dort gibt es auch den Knopf **Kopieren**.
 
-> **Wichtig:** Dein **Gruppen-Code** ist wie ein Passwort. Wer ihn kennt, sieht und ändert die Minen und Timer eurer Gruppe. Nimm also nicht `standard`, sondern einen eigenen Code, und gib ihn nur an deine Leute.
+Im selben Fenster kann man das Teilen ausschalten, einen anderen Gruppen-Code eintragen (getrennte Timer, z. B. für einen anderen Clan) oder mit **Standard-Server** wieder den eingebauten Server einstellen. Der Gruppen-Code bleibt dabei erhalten. Statt des eigenen Servers funktioniert auch eine Firebase Realtime Database, deren URL man dort einträgt.
+
+> **Wichtig:** Dein **Gruppen-Code** ist wie ein Passwort. Wer ihn kennt, sieht und ändert die Minen und Timer eurer Gruppe. Gib ihn nur an deine Leute.
 
 ## Datenschutz
 
-Beim Teilen gehen an den Server: die Minen und Timer deiner Gruppe und dein **Minecraft-Name** bei Timern, die du startest („markiert von …“). Wie bei jeder Internetverbindung sieht der Server außerdem deine IP-Adresse. Sonst sendet die Mod nichts, also keine Chat-Nachrichten, keine Dateien und keine Daten über deinen PC. Wer nicht teilen will, schaltet es unter **P → Einstellungen → Mit anderen teilen…** aus.
+Beim Teilen gehen an den Server: die Minen und Timer deiner Gruppe und dein **Minecraft-Name** bei Timern, die du startest („markiert von …“). Wie bei jeder Internetverbindung sieht der Server außerdem deine IP-Adresse. Sonst sendet die Mod nichts, also keine Chat-Nachrichten, keine Dateien und keine Daten über deinen PC. Wer nicht teilen will, schaltet es unter **Numpad 3 → Einstellungen → Mit anderen teilen…** aus.
 
 ## Selbst bauen
 

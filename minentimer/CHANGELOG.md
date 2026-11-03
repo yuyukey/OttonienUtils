@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0
+
+- **Eigener Gruppen-Code für neue Spieler:** Wer die Mod neu installiert, bekommt statt „standard“ einen zufälligen Code wie `K7QX-M2PA-9TZD`. So landet niemand mehr aus Versehen in derselben Gruppe wie Fremde.
+- **Teilen-Fenster:** Unter dem Gruppen-Code steht jetzt, dass du ihn mit deinen Freunden teilen musst. Mit dem neuen Knopf **Kopieren** landet er in der Zwischenablage.
+- Wer schon einen Gruppen-Code hat, behält ihn. Auch „Standard-Server“ lässt den Code jetzt in Ruhe.
+
 ## 1.4.0
 
 - **Neue Standardtasten:** **#** markiert die nächste Mine (bisher O), **Numpad 3** öffnet das Menü (bisher P), **Numpad 4** schaltet das Overlay ein und aus (bisher K).

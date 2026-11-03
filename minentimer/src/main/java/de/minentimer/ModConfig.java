@@ -82,7 +82,8 @@ public class ModConfig {
 
 	public boolean syncEnabled = true;
 	public String syncUrl = BuiltInSync.URL;
-	public String syncGroup = BuiltInSync.GROUP;
+	/** Neue Installationen bekommen einen eigenen Zufalls-Code, den man mit Freunden teilt. */
+	public String syncGroup = BuiltInSync.newGroupCode();
 	/** Schlüssel für den eigenen Sync-Server, wird als Header mitgeschickt (Firebase ignoriert ihn). */
 	public String syncKey = BuiltInSync.KEY;
 	/** Fehlt in Dateien von Version 1.0.0, siehe {@link #sanitize()}. */
@@ -110,8 +111,11 @@ public class ModConfig {
 				MinenTimerClient.LOGGER.error("Konnte config.json nicht lesen", e);
 			}
 		}
+		boolean fresh = instance == null && !Files.exists(file);
 		if (instance == null) instance = new ModConfig();
 		instance.sanitize();
+		// Neue Installation: gleich speichern, damit der Zufalls-Code beim nächsten Start derselbe ist
+		if (fresh) instance.save();
 	}
 
 	private void sanitize() {
@@ -129,10 +133,11 @@ public class ModConfig {
 		configVersion = 2;
 	}
 
+	/** Zurück auf den eingebauten Server. Ein vorhandener Gruppen-Code bleibt, damit man in seiner Gruppe bleibt. */
 	public void useBuiltInSync() {
 		syncEnabled = true;
 		syncUrl = BuiltInSync.URL;
-		syncGroup = BuiltInSync.GROUP;
+		if (syncGroup.isBlank()) syncGroup = BuiltInSync.newGroupCode();
 		syncKey = BuiltInSync.KEY;
 	}
 

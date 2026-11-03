@@ -49,12 +49,16 @@ public class SyncScreen extends Screen {
 		addRenderableWidget(urlBox);
 
 		y += 36;
-		EditBox groupBox = new EditBox(font, left, y, w, 20, Component.literal("Gruppen-Code"));
+		EditBox groupBox = new EditBox(font, left, y, w - 84, 20, Component.literal("Gruppen-Code"));
 		groupBox.setMaxLength(64);
 		groupBox.setValue(cfg.syncGroup);
 		groupBox.setHint(Component.literal("z. B. clan-eisenwerk-7381").withStyle(s -> s.withColor(0x777777)));
 		groupBox.setResponder(s -> cfg.syncGroup = s.trim());
 		addRenderableWidget(groupBox);
+		addRenderableWidget(Button.builder(Component.literal("Kopieren"), b -> {
+			minecraft.keyboardHandler.setClipboard(cfg.syncGroup);
+			b.setMessage(Component.literal("Kopiert ✔"));
+		}).bounds(left + w - 80, y, 80, 20).build());
 
 		addRenderableWidget(Button.builder(Component.literal("Standard-Server"), b -> {
 			cfg.useBuiltInSync();
@@ -89,8 +93,9 @@ public class SyncScreen extends Screen {
 		String status = "Status: " + sync.status();
 		if (sync.lastSuccess() > 0) status += "  (zuletzt " + TimeFormat.clock(sync.lastSuccess()) + ")";
 		boolean ok = sync.isActive() && "Verbunden".equals(sync.status());
-		g.drawString(font, status, left, top + 100, ok ? 0xFF55FF55 : 0xFFFF7777, false);
-		g.drawString(font, "Alle mit demselben Gruppen-Code sehen dieselben Minen und Timer.", left, top + 116, gray, false);
-		g.drawString(font, "Der Code ist wie ein Passwort – nur an deine Gruppe geben.", left, top + 128, gray, false);
+		g.drawString(font, "Teile diesen Code mit deinen Freunden: Sie tragen ihn hier ein,", left, top + 97, 0xFFFFDD55, false);
+		g.drawString(font, "dann seht ihr dieselben Minen und Timer.", left, top + 108, 0xFFFFDD55, false);
+		g.drawString(font, status, left, top + 124, ok ? 0xFF55FF55 : 0xFFFF7777, false);
+		g.drawString(font, "Der Code ist wie ein Passwort – nur an deine Gruppe geben.", left, top + 140, gray, false);
 	}
 }

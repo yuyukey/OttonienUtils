@@ -82,6 +82,15 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				ModConfig.get().overlayMode = ModConfig.OverlayMode.ALL;
 			});
 
+			// Neue Installationen bekommen einen eigenen Zufalls-Code statt „standard“
+			ctx.runOnClient(mc -> {
+				String a = new ModConfig().syncGroup, b = new ModConfig().syncGroup;
+				if (!a.matches("[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}") || a.equals(b)) throw new AssertionError("Zufalls-Code: " + a + " / " + b);
+				ModConfig keep = new ModConfig();
+				keep.syncGroup = "Bambus";
+				keep.useBuiltInSync();
+				if (!"Bambus".equals(keep.syncGroup)) throw new AssertionError("Standard-Server hat den Gruppen-Code verloren");
+			});
 			// Standardtasten: # markieren, Numpad 3 Menü, Numpad 4 Overlay
 			if (MinenTimerClient.quickMarkKey.getDefaultKey().getValue() != org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSLASH
 					|| MinenTimerClient.openMenuKey.getDefaultKey().getValue() != org.lwjgl.glfw.GLFW.GLFW_KEY_KP_3
