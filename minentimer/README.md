@@ -28,7 +28,7 @@ Alle Tasten lassen sich unter **Optionen → Steuerung → Tastenbelegung → Mi
 - **✎** rechts → Mine bearbeiten (Name, Koordinaten, Rohstoff-Art, Größe Vorkommen/Mine, eigene Zeit, Lehen, löschen)
 - **+ Mine hier** → neue Mine an deiner aktuellen Position anlegen (Koordinaten kannst du danach noch ändern)
 - **▲ / ▼** neben dem ✎ → Mine in der Liste nach oben/unten schieben (deine eigene Reihenfolge, gilt auch fürs Overlay und nur für dich)
-- **Sortierung** → Reihenfolge (deine eigene) / Entfernung / Status
+- **Sortierung** → Reihenfolge (deine eigene) / Entfernung / Status. Das Overlay sortiert genauso, und bei „Alle Lehen“ gruppiert es die Minen zusätzlich nach Lehen. Die Sortierung gilt nur für dich.
 - **◀ / ▶** oben → Lehen umschalten (Alle Lehen → jedes Lehen → Ohne Lehen)
 
 **Lehen-Gruppen:** Trag beim Bearbeiten einer Mine im Feld **Lehen** einen Namen ein (z. B. *Sturmhöhe*). Mit „Vorhandenes Lehen ▸“ übernimmst du einen schon benutzten Namen. Alle Minen mit demselben Namen bilden eine Gruppe, die du mit den Pfeiltasten durchschaltest. Taste O findet weiterhin die nächste Mine aus allen Lehen, und Bereit-Meldungen kommen auch für alle.

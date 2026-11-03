@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0
+
+- **Overlay nach Lehen gruppiert:** Bei „Alle Lehen“ zeigt das Overlay die Minen jetzt nach Lehen geordnet, jedes mit eigener Überschrift. Minen ohne Lehen stehen unten unter „Ohne Lehen“.
+- **Overlay folgt der Sortierung im Menü:** Stellst du im Menü (P) „Sortierung: Entfernung“ oder „Status“ ein, sortiert auch das Overlay so, innerhalb jedes Lehens. Die Sortierung gilt nur für dich.
+
 ## Server-Update (3.11.2026, nur für den Server-Betreiber)
 
 - Der Sync-Server prüft jetzt jeden Eintrag. Kaputte, zu große oder gefälschte Minen und Timer, Zeitstempel aus der Zukunft und Löschungen werden abgelehnt. Die Daten sind auf insgesamt 10 MB begrenzt.

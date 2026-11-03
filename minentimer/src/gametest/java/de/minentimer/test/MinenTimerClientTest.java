@@ -196,6 +196,26 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("minentimer-lehen-bearbeiten");
 			ctx.runOnClient(mc -> ModConfig.get().activeArea = "");
 
+			// Alle Lehen im Overlay: nach Lehen gruppiert, innerhalb nach Entfernung wie im Menü eingestellt
+			ctx.runOnClient(mc -> {
+				ModConfig cfg = ModConfig.get();
+				cfg.sortMode = ModConfig.SortMode.DISTANCE;
+				MineManager mgr = MineManager.get();
+				var shown = de.minentimer.gui.HudOverlay.visibleNames();
+				double px = mc.player.getX(), py = mc.player.getY(), pz = mc.player.getZ();
+				java.util.List<String> expected = new java.util.ArrayList<>();
+				for (String area : java.util.List.of("Rosenwacht", "Sturmhöhe", MineManager.NO_AREA)) {
+					mgr.mines().stream().filter(m -> MineManager.inArea(m, area))
+							.sorted(java.util.Comparator.comparingDouble(m -> m.distanceTo(px, py, pz)))
+							.forEach(m -> expected.add(m.name));
+				}
+				if (!shown.equals(expected)) throw new AssertionError("Overlay-Gruppen/Entfernung: " + shown + " statt " + expected);
+			});
+			ctx.setScreen(() -> null);
+			ctx.waitTicks(2);
+			ctx.takeScreenshot("minentimer-overlay-gruppiert");
+			ctx.runOnClient(mc -> ModConfig.get().sortMode = ModConfig.SortMode.LIST);
+
 			// Mine kam mit einer alten Version ohne Lehen an: gleicher Zeitstempel, Lehen wird nachgeholt
 			ctx.runOnClient(mc -> {
 				MineManager mgr = MineManager.get();
