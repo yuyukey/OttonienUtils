@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.1
+
+- Der Knopf **„Standard-Server“** im Teilen-Fenster ist weg, seit jeder einen eigenen Gruppen-Code hat, wird er nicht mehr gebraucht.
+- Wer eine andere Server-Adresse eingetragen hatte, leert einfach das Feld „Server-URL“. Beim Schließen nutzt die Mod dann wieder den eingebauten Server, der Gruppen-Code bleibt.
+
 ## 1.5.0
 
 - **Eigener Gruppen-Code für neue Spieler:** Wer die Mod neu installiert, bekommt statt „standard“ einen zufälligen Code wie `K7QX-M2PA-9TZD`. So landet niemand mehr aus Versehen in derselben Gruppe wie Fremde.

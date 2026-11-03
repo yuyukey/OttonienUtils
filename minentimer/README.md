@@ -74,7 +74,7 @@ Geteilt werden Timer **und** Minen (auch selbst angelegte). Bei gleichzeitigen �
 
 **Gruppen-Code:** Bei der ersten Installation bekommst du einen eigenen, zufälligen Code wie `K7QX-M2PA-9TZD`. Damit deine Freunde dieselben Minen und Timer sehen, gib ihnen diesen Code. Sie tragen ihn bei sich ein, unter **Numpad 3 → Einstellungen → Mit anderen teilen…**. Dort gibt es auch den Knopf **Kopieren**.
 
-Im selben Fenster kann man das Teilen ausschalten, einen anderen Gruppen-Code eintragen (getrennte Timer, z. B. für einen anderen Clan) oder mit **Standard-Server** wieder den eingebauten Server einstellen. Der Gruppen-Code bleibt dabei erhalten. Statt des eigenen Servers funktioniert auch eine Firebase Realtime Database, deren URL man dort einträgt.
+Im selben Fenster kann man das Teilen ausschalten, einen anderen Gruppen-Code eintragen (getrennte Timer, z. B. für einen anderen Clan) oder eine andere Server-Adresse eintragen. Lässt du die Adresse leer, nutzt die Mod wieder den eingebauten Server, und der Gruppen-Code bleibt erhalten. Statt des eigenen Servers funktioniert auch eine Firebase Realtime Database, deren URL man dort einträgt.
 
 > **Wichtig:** Dein **Gruppen-Code** ist wie ein Passwort. Wer ihn kennt, sieht und ändert die Minen und Timer eurer Gruppe. Gib ihn nur an deine Leute.
 

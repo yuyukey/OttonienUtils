@@ -60,17 +60,13 @@ public class SyncScreen extends Screen {
 			b.setMessage(Component.literal("Kopiert ✔"));
 		}).bounds(left + w - 80, y, 80, 20).build());
 
-		addRenderableWidget(Button.builder(Component.literal("Standard-Server"), b -> {
-			cfg.useBuiltInSync();
-			cfg.save();
-			SyncManager.get().requestPoll();
-			rebuildWidgets();
-		}).bounds(width / 2 - 154, height - 26, 150, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Fertig"), b -> onClose()).bounds(width / 2 + 4, height - 26, 150, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Fertig"), b -> onClose()).bounds(width / 2 - 75, height - 26, 150, 20).build());
 	}
 
 	@Override
 	public void onClose() {
+		// Leere Adresse heißt: wieder der eingebaute Server (der Gruppen-Code bleibt)
+		if (cfg.syncUrl.isBlank()) cfg.useBuiltInSync();
 		cfg.save();
 		SyncManager.get().requestPoll();
 		minecraft.setScreen(parent);
@@ -86,7 +82,7 @@ public class SyncScreen extends Screen {
 		super.render(g, mouseX, mouseY, delta);
 		g.drawCenteredString(font, title, width / 2, 10, 0xFFFFAA00);
 		int gray = 0xFFAAAAAA;
-		g.drawString(font, "Server-URL (Standard: " + BuiltInSync.URL.replace("https://", "") + ")", left, top + 25, gray, false);
+		g.drawString(font, "Server-URL (leer lassen für " + BuiltInSync.URL.replace("https://", "") + ")", left, top + 25, gray, false);
 		g.drawString(font, "Gruppen-Code (alle in der Gruppe brauchen denselben)", left, top + 61, gray, false);
 
 		SyncManager sync = SyncManager.get();
