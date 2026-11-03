@@ -29,9 +29,9 @@ Client-Mod für **Minecraft 1.21.11 (Fabric)**, gemacht für den Rollenspiel-Ser
 
 | Taste | Funktion |
 |---|---|
-| **P** | Menü mit allen Minen öffnen/schließen |
-| **O** | Nächste Mine (im Umkreis, Standard 40 Blöcke) markieren und ihren Timer starten |
-| **K** | Overlay ein/aus |
+| **#** | Nächste Mine (im Umkreis, Standard 40 Blöcke) markieren und ihren Timer starten |
+| **Numpad 3** | Menü mit allen Minen öffnen/schließen |
+| **Numpad 4** | Overlay ein/aus |
 | **Pfeil rechts / links** | Nächstes / vorheriges Lehen (Liste und Overlay zeigen nur dessen Minen) |
 
 Alle Tasten lassen sich unter **Optionen → Steuerung → Tastenbelegung → Minen-Timer** ändern.
@@ -46,7 +46,7 @@ Alle Tasten lassen sich unter **Optionen → Steuerung → Tastenbelegung → Mi
 - **Sortierung** → Reihenfolge (deine eigene) / Entfernung / Status. Das Overlay sortiert genauso, und bei „Alle Lehen“ gruppiert es die Minen zusätzlich nach Lehen. Die Sortierung gilt nur für dich.
 - **◀ / ▶** oben → Lehen umschalten (Alle Lehen → jedes Lehen → Ohne Lehen)
 
-**Lehen-Gruppen:** Trag beim Bearbeiten einer Mine im Feld **Lehen** einen Namen ein (z. B. *Sturmhöhe*). Mit „Vorhandenes Lehen ▸“ übernimmst du einen schon benutzten Namen. Alle Minen mit demselben Namen bilden eine Gruppe, die du mit den Pfeiltasten durchschaltest. Taste O findet weiterhin die nächste Mine aus allen Lehen, und Bereit-Meldungen kommen auch für alle.
+**Lehen-Gruppen:** Trag beim Bearbeiten einer Mine im Feld **Lehen** einen Namen ein (z. B. *Sturmhöhe*). Mit „Vorhandenes Lehen ▸“ übernimmst du einen schon benutzten Namen. Alle Minen mit demselben Namen bilden eine Gruppe, die du mit den Pfeiltasten durchschaltest. Die Markier-Taste (#) findet weiterhin die nächste Mine aus allen Lehen, und Bereit-Meldungen kommen auch für alle.
 
 ## Respawn-Zeiten
 
@@ -62,7 +62,7 @@ Jede Mine bzw. jedes Vorkommen hat **einen** Timer. Die Zeit ergibt sich aus Roh
 
 ## Einstellungen
 
-Im Menü auf **Einstellungen**: Overlay an/aus, **Zeigen** (alle Minen / nicht im Cooldown), **Overlay verschieben…** (Overlay mit der Maus an die gewünschte Stelle ziehen), Größe, Entfernung anzeigen, ab wann gelb, Ton an/aus, Ton-Art, Lautstärke, Chat-Meldung, Radius für Taste O.
+Im Menü auf **Einstellungen**: Overlay an/aus, **Zeigen** (alle Minen / nicht im Cooldown), **Overlay verschieben…** (Overlay mit der Maus an die gewünschte Stelle ziehen), Größe, Entfernung anzeigen, ab wann gelb, Ton an/aus, Ton-Art, Lautstärke, Chat-Meldung, Radius für die Markier-Taste (#).
 
 ## Mit anderen teilen
 

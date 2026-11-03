@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+- **Neue Standardtasten:** **#** markiert die nächste Mine (bisher O), **Numpad 3** öffnet das Menü (bisher P), **Numpad 4** schaltet das Overlay ein und aus (bisher K).
+- Die neuen Tasten gelten auch, wenn du die alten schon einmal gespeichert hattest. Eigene Belegungen musst du nach dem Update einmal neu einstellen, unter Optionen → Steuerung → Tastenbelegung → Minen-Timer.
+- Im Einstellungsmenü heißt „Taste O Radius“ jetzt „Markier-Radius“.
+
 ## 1.3.0
 
 - **Overlay nach Lehen gruppiert:** Bei „Alle Lehen“ zeigt das Overlay die Minen jetzt nach Lehen geordnet, jedes mit eigener Überschrift. Minen ohne Lehen stehen unten unter „Ohne Lehen“.

@@ -47,7 +47,7 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				MineManager mgr = MineManager.get();
 				Mine kohlemine = mgr.mines().stream().filter(x -> x.name.equals("Meine Kohlemine")).findFirst().orElseThrow();
 				long remaining = mgr.remainingMs(kohlemine, System.currentTimeMillis());
-				if (remaining < 239 * 60_000L) throw new AssertionError("Taste O hat Meine Kohlemine nicht mit 4 h gestartet: " + remaining);
+				if (remaining < 239 * 60_000L) throw new AssertionError("Markier-Taste hat Meine Kohlemine nicht mit 4 h gestartet: " + remaining);
 				// Alte Salz-Sorten werden zu Salz
 				Mine salz = new com.google.gson.Gson().fromJson("{\"id\":\"s\",\"type\":\"SALZ_LAPIS\",\"size\":\"MINE\"}", Mine.class);
 				salz.normalize();
@@ -82,7 +82,13 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				ModConfig.get().overlayMode = ModConfig.OverlayMode.ALL;
 			});
 
-			// Taste K schaltet das Overlay aus und wieder an
+			// Standardtasten: # markieren, Numpad 3 Menü, Numpad 4 Overlay
+			if (MinenTimerClient.quickMarkKey.getDefaultKey().getValue() != org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSLASH
+					|| MinenTimerClient.openMenuKey.getDefaultKey().getValue() != org.lwjgl.glfw.GLFW.GLFW_KEY_KP_3
+					|| MinenTimerClient.toggleOverlayKey.getDefaultKey().getValue() != org.lwjgl.glfw.GLFW.GLFW_KEY_KP_4) {
+				throw new AssertionError("Standardtasten falsch");
+			}
+			// Overlay-Taste schaltet das Overlay aus und wieder an
 			ctx.getInput().pressKey(MinenTimerClient.toggleOverlayKey);
 			ctx.waitTicks(2);
 			if (ctx.computeOnClient(mc -> ModConfig.get().overlayEnabled)) throw new AssertionError("Overlay-Taste schaltet nicht aus");

@@ -59,7 +59,7 @@ public class SettingsScreen extends Screen {
 		y += 24;
 		addRenderableWidget(CycleButton.onOffBuilder(cfg.chatMessage)
 				.create(left, y, cw, 20, Component.literal("Chat-Meldung"), (b, v) -> cfg.chatMessage = v));
-		addRenderableWidget(new IntSlider(right, y, cw, 5, 200, 5, cfg.quickMarkRadius, v -> "Taste O Radius: " + v, v -> cfg.quickMarkRadius = v));
+		addRenderableWidget(new IntSlider(right, y, cw, 5, 200, 5, cfg.quickMarkRadius, v -> "Markier-Radius: " + v, v -> cfg.quickMarkRadius = v));
 
 		int by = Math.max(y + 28, height - 26);
 		addRenderableWidget(Button.builder(Component.literal("Mit anderen teilen…"), b -> {

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/** Hauptmenü (Taste P): Liste aller Minen mit ihren Timern. */
+/** Hauptmenü (Standard: Numpad 3): Liste aller Minen mit ihren Timern. */
 public class MineListScreen extends Screen {
 	private static final int ROW_H = 24;
 	private static final int EDIT_W = 16;

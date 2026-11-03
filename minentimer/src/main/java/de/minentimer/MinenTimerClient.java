@@ -34,9 +34,11 @@ public class MinenTimerClient implements ClientModInitializer {
 		MineManager.get().load();
 
 		KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
-		openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.open_menu", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, category));
-		quickMarkKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.quick_mark", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, category));
-		toggleOverlayKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.overlay", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, category));
+		// Neue Namen ab 1.4.0, damit die neuen Standardtasten auch bei alten options.txt greifen.
+		// GLFW_KEY_BACKSLASH ist auf deutschen Tastaturen die #-Taste.
+		openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.menu", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_KP_3, category));
+		quickMarkKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.mark", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_BACKSLASH, category));
+		toggleOverlayKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.overlay_toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_KP_4, category));
 		nextAreaKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.next_area", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT, category));
 		prevAreaKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.minentimer.prev_area", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT, category));
 

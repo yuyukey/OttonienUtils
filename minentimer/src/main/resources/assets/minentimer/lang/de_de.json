@@ -1,8 +1,8 @@
 {
   "key.category.minentimer.main": "Minen-Timer",
-  "key.minentimer.open_menu": "Minen-Menü öffnen",
-  "key.minentimer.quick_mark": "Nächste Mine markieren",
-  "key.minentimer.overlay": "Overlay ein/aus",
+  "key.minentimer.menu": "Minen-Menü öffnen",
+  "key.minentimer.mark": "Nächste Mine markieren",
+  "key.minentimer.overlay_toggle": "Overlay ein/aus",
   "key.minentimer.next_area": "Nächstes Lehen",
   "key.minentimer.prev_area": "Vorheriges Lehen"
 }
