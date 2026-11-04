@@ -48,7 +48,7 @@ Alle Tasten lassen sich unter **Optionen → Steuerung → Tastenbelegung → Mi
 
 **Lehen-Gruppen:** Trag beim Bearbeiten einer Mine im Feld **Lehen** einen Namen ein (z. B. *Sturmhöhe*). Mit „Vorhandenes Lehen ▸“ übernimmst du einen schon benutzten Namen. Alle Minen mit demselben Namen bilden eine Gruppe, die du mit den Pfeiltasten durchschaltest. Die Markier-Taste (#) findet weiterhin die nächste Mine aus allen Lehen, und Bereit-Meldungen kommen auch für alle.
 
-**Auto-Markieren** (Einstellungen, standardmäßig aus): Baust du einen Rohstoff ab, startet der Timer der nächsten Mine dieser Art von selbst, egal wie weit sie weg ist. Weil das Abbauen einer Mine etwa 3 Minuten dauert, kommen diese 3 Minuten auf die Respawn-Zeit drauf. Diese Blöcke zählen:
+**Auto-Markieren** (Einstellungen, standardmäßig aus): Baust du einen Rohstoff ab, startet der Timer der nächsten Mine dieser Art von selbst, wenn sie höchstens 50 Blöcke entfernt ist. Erz, das du anderswo abbaust, löst also nichts aus. Weil das Abbauen einer Mine etwa 3 Minuten dauert, kommen diese 3 Minuten auf die Respawn-Zeit drauf. Diese Blöcke zählen:
 
 | Rohstoff | Blöcke |
 |---|---|

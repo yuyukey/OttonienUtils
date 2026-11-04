@@ -2,7 +2,7 @@
 
 ## 1.6.0 (Testversion, noch nicht veröffentlicht)
 
-- **Auto-Markieren:** Neuer Schalter unter Einstellungen → „Auto-Markieren“, standardmäßig aus. Ist er an und du baust einen Rohstoff ab, startet der Timer der nächsten Mine dieser Art von selbst, egal wie weit sie weg ist. Beispiele: Eisenerz startet die nächste Eisenmine, Kohle das nächste Kohlevorkommen. Andere Blöcke wie Stein lösen nichts aus, und ein laufender Timer wird nicht neu gestartet.
+- **Auto-Markieren:** Neuer Schalter unter Einstellungen → „Auto-Markieren“, standardmäßig aus. Ist er an und du baust einen Rohstoff ab, startet der Timer der nächsten Mine dieser Art von selbst, wenn sie höchstens 50 Blöcke entfernt ist. Erz, das du anderswo abbaust, löst nichts aus. Beispiele: Eisenerz startet die nächste Eisenmine, Kohle das nächste Kohlevorkommen. Andere Blöcke wie Stein lösen nichts aus, und ein laufender Timer wird nicht neu gestartet.
 - Beim Auto-Markieren kommen **3 Minuten** auf die Respawn-Zeit drauf, weil das Abbauen einer Mine etwa so lange dauert. Beim Markieren per Taste ändert sich nichts.
 - Diese Blöcke zählen wie auf Ottonien: Eisenerz → Eisen, Steinkohleerz → Steinkohle, Lapislazuli- und Kupfererz → Salzkristall, Tuff → Torf, Ton → Tonklumpen. Tiefenschiefer-Varianten zählen auch.
 - Welche Blöcke zu welchem Rohstoff gehören, steht in `config/minentimer/config.json` unter `autoMarkBlocks` und lässt sich dort ändern.

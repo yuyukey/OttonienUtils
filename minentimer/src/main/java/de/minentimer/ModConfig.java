@@ -80,6 +80,8 @@ public class ModConfig {
 	public boolean autoMark = false;
 	/** So viele Minuten kommen beim Auto-Markieren dazu, weil das Abbauen einer Mine etwa so lange dauert. */
 	public int autoMarkExtraMinutes = 3;
+	/** Nur Minen bis zu dieser Entfernung vom abgebauten Block zählen, damit Erz anderswo nichts auslöst. */
+	public int autoMarkMaxDistance = 50;
 	/** Welche Blöcke beim Auto-Markieren zu welcher Rohstoffart gehören. Fehlende Arten bekommen die Standardblöcke. */
 	public Map<ResourceType, List<String>> autoMarkBlocks = new EnumMap<>(ResourceType.class);
 	public SortMode sortMode = SortMode.LIST;

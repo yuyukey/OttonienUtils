@@ -106,8 +106,8 @@ public class MinenTimerClient implements ClientModInitializer {
 	}
 
 	/**
-	 * Auto-Markieren: Wer einen Rohstoff abbaut, startet den Timer der nächsten Mine dieser Art, egal wie weit.
-	 * Vorkommen derselben Art liegen auf Ottonien weit genug auseinander. Dazu kommt die Abbauzeit.
+	 * Auto-Markieren: Wer einen Rohstoff abbaut, startet den Timer der nächsten Mine dieser Art im Umkreis
+	 * von autoMarkMaxDistance (Standard 50 Blöcke). Dazu kommt die Abbauzeit.
 	 * Liefert true, wenn ein Timer gestartet wurde.
 	 */
 	public static boolean autoMark(Minecraft mc, BlockPos pos, BlockState state) {
@@ -116,7 +116,7 @@ public class MinenTimerClient implements ClientModInitializer {
 		ResourceType type = resourceOf(cfg, state);
 		if (type == null) return false;
 		MineManager mgr = MineManager.get();
-		Mine mine = mgr.nearestOfType(type, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, Double.MAX_VALUE);
+		Mine mine = mgr.nearestOfType(type, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, Math.max(1, cfg.autoMarkMaxDistance));
 		if (mine == null || mgr.isRunning(mine, System.currentTimeMillis())) return false;
 		mgr.start(mine, Math.max(0, cfg.autoMarkExtraMinutes) * 60_000L);
 		actionBar(mc, Component.literal("⛏ " + mine.name + " automatisch markiert – bereit um " + TimeFormat.clock(mgr.timer(mine).readyAt)).withStyle(ChatFormatting.GREEN));

@@ -111,11 +111,12 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				if (Math.abs(mgr.timer(eisen).readyAt - expected) > 5_000) throw new AssertionError("Abbauzeit nicht draufgerechnet: " + (mgr.timer(eisen).readyAt - before) / 60_000 + " Min");
 				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Laufender Timer wurde neu gestartet");
 				mgr.deleteMine(eisen);
-				// Ohne Radius: auch weit weg zählt die nächste Mine dieser Art (hier Eisen Vorkommen 2 bei 622/84/1423)
+				// Bis 50 Blöcke zählt die nächste Mine dieser Art (hier Eisen Vorkommen 2 bei 622/84/1423)
 				Mine fern = mgr.mines().stream().filter(m -> m.id.equals("eisen_vorkommen_2")).findFirst().orElseThrow();
 				mgr.reset(fern);
 				if (!MinenTimerClient.autoMark(mc, new net.minecraft.core.BlockPos(630, 80, 1430), iron) || !mgr.isRunning(fern, System.currentTimeMillis())) throw new AssertionError("Nächste ferne Mine wurde nicht markiert");
 				mgr.reset(fern);
+				if (MinenTimerClient.autoMark(mc, new net.minecraft.core.BlockPos(622 + 60, 84, 1423), iron)) throw new AssertionError("Mine 60 Blöcke weg wurde markiert");
 				// Torf ist auf Ottonien Tuff
 				Mine torf = mgr.createMine("Auto-Torf", pos.getX(), pos.getY(), pos.getZ());
 				torf.type = ResourceType.TORF;

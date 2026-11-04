@@ -64,7 +64,7 @@ public class SettingsScreen extends Screen {
 		y += 24;
 		CycleButton<Boolean> autoMark = CycleButton.onOffBuilder(cfg.autoMark)
 				.create(left, y, cw, 20, Component.literal("Auto-Markieren"), (b, v) -> cfg.autoMark = v);
-		autoMark.setTooltip(Tooltip.create(Component.literal("Baust du einen Rohstoff ab (z. B. Eisenerz), startet der Timer der nächsten Mine dieser Art von selbst. Dazu kommen 3 Minuten für das Abbauen.")));
+		autoMark.setTooltip(Tooltip.create(Component.literal("Baust du einen Rohstoff ab (z. B. Eisenerz), startet der Timer der nächsten Mine dieser Art bis 50 Blöcke entfernt von selbst. Dazu kommen 3 Minuten für das Abbauen.")));
 		addRenderableWidget(autoMark);
 
 		int by = Math.max(y + 28, height - 26);
