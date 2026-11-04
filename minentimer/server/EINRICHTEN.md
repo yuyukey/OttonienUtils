@@ -108,7 +108,7 @@ systemctl restart minentimer         # neu starten
 cp /var/lib/minentimer/data.json ~/  # Sicherung der Timer
 ```
 
-**Schlüssel ändern:** In `/etc/minentimer.env` und beim Bauen der Mod in `minentimer/sync-key.txt` muss derselbe Schlüssel stehen. Der Schlüssel steckt in jeder fertigen JAR, ist also nicht wirklich geheim. Den eigentlichen Schutz liefern die Prüfungen des Servers und die Gruppen-Codes.
+**Schlüssel ändern:** In `/etc/minentimer.env` und beim Bauen der Mod in `minentimer/sync-key.txt` muss derselbe Schlüssel stehen. Der Schlüssel steckt in jeder fertigen JAR, ist also nicht wirklich geheim. Den eigentlichen Schutz liefern die Prüfungen des Servers und die Lehen-Codes.
 
 ## Absicherung nachrüsten (Server läuft schon)
 

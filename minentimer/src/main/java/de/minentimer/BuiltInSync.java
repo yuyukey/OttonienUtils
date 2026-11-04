@@ -28,6 +28,27 @@ public final class BuiltInSync {
 		return sb.toString();
 	}
 
+	/**
+	 * Code eines Lehens, abgeleitet aus dem eigenen Code für Minen ohne Lehen. Wer denselben Code hat
+	 * (z. B. eine Gruppe aus älteren Versionen), kommt so ohne Absprache auf denselben Lehen-Code.
+	 * Aus dem Lehen-Code lässt sich der eigene Code nicht zurückrechnen.
+	 */
+	public static String lehenCode(String ownCode, String area) {
+		try {
+			byte[] h = java.security.MessageDigest.getInstance("SHA-256").digest(
+					("minentimer-lehen\n" + ownCode.trim() + "\n" + area.trim().toLowerCase(java.util.Locale.ROOT))
+							.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < 12; i++) {
+				if (i > 0 && i % 4 == 0) sb.append('-');
+				sb.append(CODE_CHARS.charAt((h[i] & 0xFF) % CODE_CHARS.length()));
+			}
+			return sb.toString();
+		} catch (java.security.NoSuchAlgorithmException e) {
+			return newGroupCode();
+		}
+	}
+
 	private static String loadKey() {
 		try (InputStream in = BuiltInSync.class.getResourceAsStream("/minentimer-sync.properties")) {
 			if (in == null) return "";

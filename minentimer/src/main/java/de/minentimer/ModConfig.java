@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,8 +93,14 @@ public class ModConfig {
 
 	public boolean syncEnabled = true;
 	public String syncUrl = BuiltInSync.URL;
-	/** Neue Installationen bekommen einen eigenen Zufalls-Code, den man mit Freunden teilt. */
+	/** Code für Minen ohne Lehen. Neue Installationen bekommen einen eigenen Zufalls-Code. */
 	public String syncGroup = BuiltInSync.newGroupCode();
+	/** Lehen-Name -> Code, über den die Minen dieses Lehens geteilt werden. */
+	public Map<String, String> lehenCodes = new LinkedHashMap<>();
+	/** Eingetragene Codes, die noch keinem Lehen zugeordnet sind (z. B. weil dort noch nichts liegt). */
+	public List<String> joinCodes = new ArrayList<>();
+	/** Verlassene Lehen, die nicht von selbst wieder auftauchen sollen. */
+	public List<String> leftLehen = new ArrayList<>();
 	/** Schlüssel für den eigenen Sync-Server, wird als Header mitgeschickt (Firebase ignoriert ihn). */
 	public String syncKey = BuiltInSync.KEY;
 	/** Fehlt in Dateien von Version 1.0.0, siehe {@link #sanitize()}. */
@@ -149,6 +156,13 @@ public class ModConfig {
 		if (syncUrl == null) syncUrl = "";
 		if (syncGroup == null) syncGroup = "";
 		if (syncKey == null) syncKey = "";
+		Map<String, String> codes = new LinkedHashMap<>();
+		if (lehenCodes != null) lehenCodes.forEach((a, c) -> {
+			if (a != null && !a.isBlank() && c != null && !c.isBlank()) codes.put(a.trim(), c.trim());
+		});
+		lehenCodes = codes;
+		joinCodes = joinCodes == null ? new ArrayList<>() : new ArrayList<>(joinCodes.stream().filter(c -> c != null && !c.isBlank()).toList());
+		leftLehen = leftLehen == null ? new ArrayList<>() : new ArrayList<>(leftLehen.stream().filter(c -> c != null).toList());
 		// Alte Einstellungen ohne eingerichtetes Teilen auf den eigenen Server umstellen
 		if (configVersion == null && syncUrl.isBlank()) useBuiltInSync();
 		configVersion = 2;
@@ -160,6 +174,33 @@ public class ModConfig {
 		syncUrl = BuiltInSync.URL;
 		if (syncGroup.isBlank()) syncGroup = BuiltInSync.newGroupCode();
 		syncKey = BuiltInSync.KEY;
+	}
+
+	/** Eingetragener Code des Lehens (Groß-/Kleinschreibung egal), sonst null. */
+	public String mappedCode(String area) {
+		if (area == null || area.isBlank()) return syncGroup;
+		for (Map.Entry<String, String> e : lehenCodes.entrySet()) if (e.getKey().equalsIgnoreCase(area.trim())) return e.getValue();
+		return null;
+	}
+
+	/** Code, über den Minen dieses Lehens geteilt werden. Neue Lehen bekommen ihn hier. */
+	public String codeFor(String area) {
+		String code = mappedCode(area);
+		if (code != null) return code;
+		code = BuiltInSync.lehenCode(syncGroup, area);
+		setLehenCode(area, code);
+		return code;
+	}
+
+	public void setLehenCode(String area, String code) {
+		lehenCodes.keySet().removeIf(k -> k.equalsIgnoreCase(area.trim()));
+		lehenCodes.put(area.trim(), code.trim());
+		leftLehen.removeIf(k -> k.equalsIgnoreCase(area.trim()));
+		save();
+	}
+
+	public boolean hasLeft(String area) {
+		return leftLehen.stream().anyMatch(k -> k.equalsIgnoreCase(area.trim()));
 	}
 
 	public void save() {

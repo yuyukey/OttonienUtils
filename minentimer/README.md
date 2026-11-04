@@ -1,6 +1,6 @@
 # Minen-Timer
 
-Client-Mod für **Minecraft 1.21.11 (Fabric)**, gemacht für den Rollenspiel-Server **Ottonien**. Sie zeigt Respawn-Timer für Minen und Vorkommen, mit Overlay, Ton, Lehen-Gruppen und Timern, die du mit deiner Gruppe teilst.
+Client-Mod für **Minecraft 1.21.11 (Fabric)**, gemacht für den Rollenspiel-Server **Ottonien**. Sie zeigt Respawn-Timer für Minen und Vorkommen, mit Overlay, Ton, Lehen-Gruppen und Timern, die du pro Lehen mit anderen teilst.
 
 > Inoffiziell: von Spielern für Spieler, kein Projekt des Ottonien-Teams. Teil von [OttonienUtils](../README.md).
 
@@ -82,17 +82,21 @@ Die Mod teilt Timer **automatisch** über den eigenen Server `https://minen.vpro
 
 Wie der Server auf dem Ubuntu-Server eingerichtet wird, steht in [server/EINRICHTEN.md](server/EINRICHTEN.md).
 
-Geteilt werden Timer **und** Minen (auch selbst angelegte). Bei gleichzeitigen Änderungen gewinnt die neueste. Der Abgleich passiert alle 10 Sekunden. Im Menü siehst du beim Darüberfahren, **wer** eine Mine markiert hat.
+Geteilt werden die Minen **mit Lehen** und ihre Timer. Minen ohne Lehen bleiben bei dir. Bei gleichzeitigen Änderungen gewinnt die neueste. Der Abgleich passiert alle 10 Sekunden. Im Menü siehst du beim Darüberfahren, **wer** eine Mine markiert hat.
 
-**Gruppen-Code:** Bei der ersten Installation bekommst du einen eigenen, zufälligen Code wie `K7QX-M2PA-9TZD`. Damit deine Freunde dieselben Minen und Timer sehen, gib ihnen diesen Code. Sie tragen ihn bei sich ein, unter **Numpad 3 → Einstellungen → Mit anderen teilen…**. Dort gibt es auch den Knopf **Kopieren**.
+**Lehen-Codes:** Jedes Lehen hat einen eigenen, zufälligen Code wie `K7QX-M2PA-9TZD`. Du findest ihn unter **Numpad 3 → Einstellungen → Mit anderen teilen…**, dort gibt es auch den Knopf **Kopieren**. Gib den Code eines Lehens allen, die dort Rechte haben, auch wenn sie sonst in einer anderen Gruppe sind. Sie tragen ihn im selben Fenster unten ein, dann taucht das Lehen mit seinen Minen und Timern bei ihnen auf. Deine anderen Lehen sehen sie nicht.
 
-Im selben Fenster kann man das Teilen ausschalten, einen anderen Gruppen-Code eintragen (getrennte Timer, z. B. für einen anderen Clan) oder eine andere Server-Adresse eintragen. Lässt du die Adresse leer, nutzt die Mod wieder den eingebauten Server, und der Gruppen-Code bleibt erhalten. Statt des eigenen Servers funktioniert auch eine Firebase Realtime Database, deren URL man dort einträgt.
+- **Neu:** Gibt einem Lehen einen neuen Code, z. B. wenn der alte bei den Falschen gelandet ist. Wer nur den alten Code hat, sieht das Lehen danach nicht mehr. Gib den neuen allen, die weiter mitmachen sollen.
+- **✕:** Verlässt ein Lehen. Seine Minen verschwinden nur bei dir.
+- **Server …:** Hier lässt sich eine andere Server-Adresse eintragen. Lässt du sie leer, nutzt die Mod wieder den eingebauten Server. Statt des eigenen Servers funktioniert auch eine Firebase Realtime Database.
 
-> **Wichtig:** Dein **Gruppen-Code** ist wie ein Passwort. Wer ihn kennt, sieht und ändert die Minen und Timer eurer Gruppe. Gib ihn nur an deine Leute.
+Wer vor Version 1.7.0 einen gemeinsamen Gruppen-Code hatte, bekommt nach dem Update automatisch dieselben Lehen-Codes wie die anderen aus der Gruppe.
+
+> **Wichtig:** Ein **Lehen-Code** ist wie ein Passwort. Wer ihn kennt, sieht und ändert die Minen und Timer dieses Lehens und kann auch den Code ändern. Gib ihn nur an Leute, denen du traust.
 
 ## Datenschutz
 
-Beim Teilen gehen an den Server: die Minen und Timer deiner Gruppe und dein **Minecraft-Name** bei Timern, die du startest („markiert von …“). Wie bei jeder Internetverbindung sieht der Server außerdem deine IP-Adresse. Sonst sendet die Mod nichts, also keine Chat-Nachrichten, keine Dateien und keine Daten über deinen PC. Wer nicht teilen will, schaltet es unter **Numpad 3 → Einstellungen → Mit anderen teilen…** aus.
+Beim Teilen gehen an den Server: die Minen und Timer deiner Lehen und dein **Minecraft-Name** bei Timern, die du startest („markiert von …“). Wie bei jeder Internetverbindung sieht der Server außerdem deine IP-Adresse. Sonst sendet die Mod nichts, also keine Chat-Nachrichten, keine Dateien und keine Daten über deinen PC. Wer nicht teilen will, schaltet es unter **Numpad 3 → Einstellungen → Mit anderen teilen…** aus.
 
 ## Selbst bauen
 

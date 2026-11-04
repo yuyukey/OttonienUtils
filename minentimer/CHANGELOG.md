@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.0
+
+- **Nur noch Lehen-Codes:** Jedes Lehen wird über einen **eigenen Code** geteilt, einen Gruppen-Code gibt es nicht mehr. Haben Spieler aus verschiedenen Gruppen Rechte auf dasselbe Lehen, geben sie sich den Code dieses Lehens. Dann sehen alle dessen Minen und Timer, aber nichts von deinen anderen Lehen.
+- **Minen ohne Lehen bleiben bei dir.** Willst du z. B. die Eisenmine teilen, gib ihr ein Lehen.
+- Im Teilen-Fenster steht jedes Lehen mit seinem Code und einem Kopieren-Knopf. Einen Code, den dir jemand gibt, trägst du unten ein, das Lehen taucht dann von selbst auf.
+- **Code ändern:** Mit „Neu“ bekommt ein Lehen einen neuen Code, z. B. wenn der alte bei den Falschen gelandet ist. Wer nur den alten hat, sieht das Lehen nicht mehr. Gib den neuen allen, die weiter mitmachen sollen.
+- Mit ✕ verlässt du ein Lehen. Seine Minen verschwinden nur bei dir.
+- **Bestehende Gruppen laufen weiter:** Wer bisher denselben Gruppen-Code hatte, bekommt automatisch dieselben Lehen-Codes. Alle sollten aber auf diese Version updaten.
+- Die Server-Adresse steht jetzt hinter dem Knopf „Server …“.
+
 ## 1.6.1
 
 - **Auto-Markieren startet neu, wenn das Erz früher da ist:** Läuft der Timer einer Mine nur noch **höchstens 10 Minuten** und du baust dort schon wieder Erz ab, startet der Timer neu. Unten im Bild steht dann „neu gestartet (Erz war schon da)“. Bei mehr Restzeit bleibt der Timer wie bisher unberührt.

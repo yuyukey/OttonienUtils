@@ -349,9 +349,79 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 			} catch (Exception e) {
 				throw new AssertionError("Mock-Server nicht erreichbar", e);
 			}
-			if (!uploaded.replace(" ", "").contains("\"eisen_vorkommen_2\":{\"readyAt\"") || !uploaded.contains("meine_kohlemine_")) {
-				throw new AssertionError("Lokale Änderungen fehlen auf dem Server: " + uploaded);
+			// Minen ohne Lehen werden nicht geteilt, in den eigenen Code wird nichts geschrieben
+			if (uploaded.contains("meine_kohlemine_") || uploaded.contains("Player")) throw new AssertionError("Etwas im eigenen Code gelandet: " + uploaded);
+			ctx.runOnClient(mc -> {
+				// Lehen, das eine ältere Version noch unter dem Gruppen-Code abgelegt hat
+				Mine alt = MineManager.get().mines().stream().filter(x -> x.id.equals("alt_lehen")).findFirst()
+						.orElseThrow(() -> new AssertionError("Lehen aus dem alten Gruppen-Code fehlt"));
+				if (!de.minentimer.BuiltInSync.lehenCode("test", "Altmark").equals(ModConfig.get().mappedCode(alt.area))) {
+					throw new AssertionError("Altes Lehen hat falschen Code: " + ModConfig.get().lehenCodes);
+				}
+			});
+			// Lehen-Minen laufen über den Code ihres Lehens, nicht über den eigenen
+			if (uploaded.contains("Sturmh") || uploaded.replace(" ", "").contains("\"eisen_vorkommen_2\":{\"readyAt\"")) {
+				throw new AssertionError("Lehen-Mine im eigenen Code gelandet: " + uploaded);
 			}
+			String sturm = fetch(de.minentimer.BuiltInSync.lehenCode("test", "Sturmhöhe"));
+			if (!sturm.replace(" ", "").contains("\"eisen_vorkommen_2\":{\"readyAt\"") || sturm.contains("meine_kohlemine_")) {
+				throw new AssertionError("Sturmhöhe-Code falsch: " + sturm);
+			}
+
+			// Code eines Lehens aus einer anderen Gruppe eintragen
+			ctx.runOnClient(mc -> SyncManager.get().join("LEHN-TEST-0001"));
+			ctx.waitTicks(60);
+			ctx.runOnClient(mc -> {
+				MineManager mgr = MineManager.get();
+				ModConfig cfg = ModConfig.get();
+				Mine fremd = mgr.mines().stream().filter(x -> x.id.equals("fremd_eisen")).findFirst()
+						.orElseThrow(() -> new AssertionError("Mine aus dem Lehen-Code fehlt, Status: " + SyncManager.get().status()));
+				if (!"Grenzmark".equals(fremd.area) || !"LEHN-TEST-0001".equals(cfg.mappedCode("Grenzmark")) || !cfg.joinCodes.isEmpty()) {
+					throw new AssertionError("Lehen-Code nicht zugeordnet: " + fremd.area + " " + cfg.lehenCodes + " " + cfg.joinCodes);
+				}
+				if (mgr.timer(fremd) == null || !"Andere".equals(mgr.timer(fremd).by)) throw new AssertionError("Timer der anderen Gruppe fehlt");
+				Mine eisenmine = mgr.mines().stream().filter(x -> x.id.equals("eisenmine")).findFirst().orElseThrow();
+				if (!eisenmine.area.isEmpty() || !"Eisenmine".equals(eisenmine.name)) throw new AssertionError("Lehen-Code hat eine eigene Mine übernommen");
+				mgr.start(fremd);
+				Mine kohle = mgr.mines().stream().filter(x -> x.id.equals("kohle_vorkommen_1")).findFirst().orElseThrow().copy();
+				kohle.area = "Grenzmark";
+				mgr.saveMine(kohle);
+			});
+			ctx.waitTicks(40);
+			String lehen = fetch("LEHN-TEST-0001");
+			String own = fetch("test");
+			if (!lehen.contains("kohle_vorkommen_1") || lehen.contains("meine_kohlemine_") || lehen.contains("Sturmh") || !lehen.contains("Player")) {
+				throw new AssertionError("Lehen-Code auf dem Server falsch: " + lehen);
+			}
+			if (own.contains("kohle_vorkommen_1")) throw new AssertionError("Mine ohne Lehen im eigenen Code: " + own);
+
+			// Lehen-Code ändern: alles zieht um, beim alten Code verschwinden die Minen
+			String[] fresh = new String[1];
+			ctx.runOnClient(mc -> {
+				fresh[0] = SyncManager.get().changeCode("Grenzmark");
+				if (fresh[0] == null || !fresh[0].equals(ModConfig.get().mappedCode("Grenzmark"))) throw new AssertionError("Code nicht geändert");
+			});
+			ctx.waitTicks(60);
+			String moved = fetch(fresh[0]);
+			if (!moved.contains("fremd_eisen") || !moved.contains("kohle_vorkommen_1")) throw new AssertionError("Neuer Code unvollständig: " + moved);
+			var oldMines = com.google.gson.JsonParser.parseString(fetch("LEHN-TEST-0001")).getAsJsonObject().getAsJsonObject("mines");
+			if (!oldMines.getAsJsonObject("fremd_eisen").get("deleted").getAsBoolean()) throw new AssertionError("Alter Code zeigt das Lehen noch");
+			ctx.runOnClient(mc -> {
+				if (MineManager.get().mines().stream().noneMatch(x -> x.id.equals("fremd_eisen"))) throw new AssertionError("Lehen nach Code-Wechsel bei mir weg");
+			});
+			ctx.runOnClient(mc -> {
+				MineManager mgr = MineManager.get();
+				ModConfig cfg = ModConfig.get();
+				mgr.leaveLehen("Grenzmark");
+				if (mgr.mines().stream().anyMatch(x -> "Grenzmark".equals(x.area)) || cfg.mappedCode("Grenzmark") != null) {
+					throw new AssertionError("Lehen nicht verlassen");
+				}
+				SyncManager.get().requestPoll();
+			});
+			ctx.waitTicks(40);
+			ctx.runOnClient(mc -> {
+				if (MineManager.get().mines().stream().anyMatch(x -> "Grenzmark".equals(x.area))) throw new AssertionError("Verlassenes Lehen ist zurück");
+			});
 			ctx.runOnClient(mc -> {
 				if (!"Verbunden".equals(SyncManager.get().status())) throw new AssertionError("Sync-Status nach Upload: " + SyncManager.get().status());
 			});
@@ -360,6 +430,17 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 			ctx.setScreen(() -> new MineListScreen(null));
 			ctx.takeScreenshot("minentimer-menue-sync");
 			ctx.setScreen(() -> null);
+		}
+	}
+
+	private static String fetch(String code) {
+		try {
+			return java.net.http.HttpClient.newHttpClient().send(
+					java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:8765/minentimer/" + code + ".json"))
+							.header("X-MinenTimer-Key", de.minentimer.BuiltInSync.KEY).build(),
+					java.net.http.HttpResponse.BodyHandlers.ofString()).body();
+		} catch (Exception e) {
+			throw new AssertionError("Mock-Server nicht erreichbar", e);
 		}
 	}
 }

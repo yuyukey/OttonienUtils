@@ -241,10 +241,28 @@ public final class MineManager {
 	}
 
 	public void saveMine(Mine mine) {
+		Mine before = mines.get(mine.id);
+		String previousArea = before == null || before == mine ? null : before.area;
 		mine.updatedAt = System.currentTimeMillis();
 		mines.put(mine.id, mine);
 		saveMines();
-		SyncManager.get().pushMine(mine);
+		SyncManager.get().pushMine(mine, previousArea);
+	}
+
+	/** Verlässt ein Lehen: seine Minen und Timer verschwinden nur hier, bei den anderen bleiben sie. */
+	public void leaveLehen(String area) {
+		ModConfig cfg = ModConfig.get();
+		mines.values().removeIf(m -> {
+			boolean gone = !m.area.isEmpty() && m.area.equalsIgnoreCase(area);
+			if (gone) timers.remove(m.id);
+			return gone;
+		});
+		cfg.lehenCodes.keySet().removeIf(k -> k.equalsIgnoreCase(area));
+		if (!cfg.hasLeft(area)) cfg.leftLehen.add(area);
+		if (cfg.activeArea.equalsIgnoreCase(area)) cfg.activeArea = "";
+		cfg.save();
+		saveMines();
+		saveTimers();
 	}
 
 	public void deleteMine(Mine mine) {
