@@ -104,10 +104,18 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Auto-Markieren lief, obwohl aus");
 				cfg.autoMark = true;
 				if (MinenTimerClient.autoMark(mc, pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState())) throw new AssertionError("Stein hat markiert");
+				long before = System.currentTimeMillis();
 				if (!MinenTimerClient.autoMark(mc, pos, iron) || !mgr.isRunning(eisen, System.currentTimeMillis())) throw new AssertionError("Eisenerz hat nicht markiert");
+				// Respawn-Zeit plus 3 Minuten Abbauzeit
+				long expected = before + (eisen.respawnMinutes() + 3) * 60_000L;
+				if (Math.abs(mgr.timer(eisen).readyAt - expected) > 5_000) throw new AssertionError("Abbauzeit nicht draufgerechnet: " + (mgr.timer(eisen).readyAt - before) / 60_000 + " Min");
 				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Laufender Timer wurde neu gestartet");
-				if (MinenTimerClient.autoMark(mc, pos.offset(500, 0, 0), iron)) throw new AssertionError("Mine weit weg wurde markiert");
 				mgr.deleteMine(eisen);
+				// Ohne Radius: auch weit weg zählt die nächste Mine dieser Art (hier Eisen Vorkommen 2 bei 622/84/1423)
+				Mine fern = mgr.mines().stream().filter(m -> m.id.equals("eisen_vorkommen_2")).findFirst().orElseThrow();
+				mgr.reset(fern);
+				if (!MinenTimerClient.autoMark(mc, new net.minecraft.core.BlockPos(630, 80, 1430), iron) || !mgr.isRunning(fern, System.currentTimeMillis())) throw new AssertionError("Nächste ferne Mine wurde nicht markiert");
+				mgr.reset(fern);
 				// Torf ist auf Ottonien Tuff
 				Mine torf = mgr.createMine("Auto-Torf", pos.getX(), pos.getY(), pos.getZ());
 				torf.type = ResourceType.TORF;

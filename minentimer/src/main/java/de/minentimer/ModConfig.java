@@ -78,6 +78,8 @@ public class ModConfig {
 	public int quickMarkRadius = 40;
 	/** Timer automatisch starten, wenn man in der Nähe einer Mine ihren Rohstoff abbaut. */
 	public boolean autoMark = false;
+	/** So viele Minuten kommen beim Auto-Markieren dazu, weil das Abbauen einer Mine etwa so lange dauert. */
+	public int autoMarkExtraMinutes = 3;
 	/** Welche Blöcke beim Auto-Markieren zu welcher Rohstoffart gehören. Fehlende Arten bekommen die Standardblöcke. */
 	public Map<ResourceType, List<String>> autoMarkBlocks = new EnumMap<>(ResourceType.class);
 	public SortMode sortMode = SortMode.LIST;
