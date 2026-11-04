@@ -5,7 +5,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.lehenskarte.LehenskarteClient;
 
+import net.fabricmc.loader.api.FabricLoader;
+
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -81,7 +86,11 @@ public final class OttonienData {
 		loading = true;
 		CompletableFuture<String> regions = fetch("regions");
 		CompletableFuture<String> factions = fetch("factions");
-		regions.thenCombine(factions, OttonienData::parse).whenComplete((snap, err) -> {
+		regions.thenCombine(factions, (r, f) -> {
+			Snapshot snap = parse(r, f);
+			writeCache(r, f);
+			return snap;
+		}).whenComplete((snap, err) -> {
 			loading = false;
 			if (err != null) {
 				lastError = err.getMessage();
@@ -93,6 +102,36 @@ public final class OttonienData {
 			snapshot = snap;
 			if (changed) onChange.run();
 		});
+	}
+
+	// ---------------------------------------------------------------- Zwischenspeicher
+
+	private static Path cacheDir() {
+		return FabricLoader.getInstance().getConfigDir().resolve("lehenskarte").resolve("cache");
+	}
+
+	/** Letzten Stand von der Festplatte laden, damit beim Start sofort alles da ist. */
+	public static void loadCache() {
+		Path dir = cacheDir();
+		try {
+			Path r = dir.resolve("regions.json"), f = dir.resolve("factions.json");
+			if (!Files.exists(r) || !Files.exists(f)) return;
+			Snapshot snap = parse(Files.readString(r, StandardCharsets.UTF_8), Files.readString(f, StandardCharsets.UTF_8));
+			snapshot = new Snapshot(snap.regions, snap.factionByRegion, snap.factionByUuid, Files.getLastModifiedTime(f).toMillis());
+		} catch (Exception e) {
+			LehenskarteClient.LOGGER.warn("Lehenskarte: Zwischenspeicher nicht lesbar: {}", e.toString());
+		}
+	}
+
+	private static void writeCache(String regionsJson, String factionsJson) {
+		try {
+			Path dir = cacheDir();
+			Files.createDirectories(dir);
+			Files.writeString(dir.resolve("regions.json"), regionsJson, StandardCharsets.UTF_8);
+			Files.writeString(dir.resolve("factions.json"), factionsJson, StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			LehenskarteClient.LOGGER.debug("Lehenskarte: Zwischenspeicher nicht schreibbar: {}", e.toString());
+		}
 	}
 
 	private static CompletableFuture<String> fetch(String what) {

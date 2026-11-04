@@ -29,7 +29,7 @@ public class MinimapLehenHighlighter extends AbstractHighlighter {
 	@Override
 	public int[] getChunkHighlitColor(ResourceKey<Level> dim, int chunkX, int chunkZ) {
 		if (!overworld(dim)) return null;
-		return LehenState.chunkColors(chunkX, chunkZ, resultStore) ? resultStore : null;
+		return LehenState.chunkColors(chunkX, chunkZ, resultStore, true) ? resultStore : null;
 	}
 
 	@Override

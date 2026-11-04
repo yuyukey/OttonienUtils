@@ -30,16 +30,32 @@ public final class Config {
 	public int borderOpacity = 70;
 	/** Banner in der World Map zeigen. */
 	public boolean bannersOnMap = true;
+	/** Beim Rauszoomen Lehen zusammenfassen: erst Freiherrschaften mit Vasallen, dann ganze Machtbereiche. */
+	public boolean groupOnZoomOut = true;
+	/** In unerkundeten (schwarzen) Bereichen der World Map die gemalte Karte von karte.ottonien.com zeigen. */
+	public boolean paintedMap = true;
+	/** Verschiebung der gemalten Karte in Blöcken (positiv = nach rechts bzw. unten). */
+	public int paintedMapOffsetX = 65;
+	public int paintedMapOffsetZ = -40;
+	/** Im Chat melden, wenn ein Lehen den Besitzer wechselt oder frei wird. */
+	public boolean notifyChanges = true;
+	/** NPC-Dörfer auf der World Map zeigen. */
+	public boolean npcVillages = true;
 	/** Version des Dateiformats, für Anpassungen alter Einstellungen. */
 	public int configVersion = 0;
 
-	private static final int CURRENT_VERSION = 2;
+	private static final int CURRENT_VERSION = 3;
 
 	/** 0.1.0-test1 war zu dunkel: alte Deckkraft-Werte auf die neuen Standards setzen. */
 	private void migrate() {
 		if (configVersion < 2) {
 			fillOpacity = 14;
 			borderOpacity = 70;
+		}
+		// test9 hatte eine geschätzte Verschiebung; ab test10 an echten Kartendaten (Insel von Finsterfels) gemessen
+		if (configVersion < 3) {
+			paintedMapOffsetX = 65;
+			paintedMapOffsetZ = -40;
 		}
 		configVersion = CURRENT_VERSION;
 	}

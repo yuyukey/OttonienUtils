@@ -11,8 +11,9 @@ import java.util.List;
 /** Färbt die Lehen in Xaero's World Map ein, über dieselbe Schnittstelle wie Open Parties and Claims. */
 public class WorldMapLehenHighlighter extends AbstractHighlighter {
 	public WorldMapLehenHighlighter() {
-		// true: auch in noch nicht erkundeten Gebieten zeigen, wie auf der Website
-		super(true);
+		// Mit gemalter Karte bleiben unerkundete Gebiete schwarz, damit die Karte dort erscheinen kann;
+		// sonst auch dort einfärben, wie auf der Website.
+		super(!de.lehenskarte.Config.get().paintedMap);
 	}
 
 	private static boolean overworld(ResourceKey<Level> dim) {
@@ -37,7 +38,7 @@ public class WorldMapLehenHighlighter extends AbstractHighlighter {
 	@Override
 	public int[] getChunkHighlitColor(ResourceKey<Level> dim, int chunkX, int chunkZ) {
 		if (!overworld(dim)) return null;
-		return LehenState.chunkColors(chunkX, chunkZ, resultStore) ? resultStore : null;
+		return LehenState.chunkColors(chunkX, chunkZ, resultStore, false) ? resultStore : null;
 	}
 
 	// Namen zeigt die Lehenskarte selbst beim Überfahren an, darum hier keine Tooltips.

@@ -20,6 +20,8 @@ dependencies {
 		"libs/xaerolib-fabric-1.21.11-1.1.15.jar"
 	)
 	modCompileOnly xaero
+	// Mod Menu nur für den Einstellungs-Knopf, optional
+	modCompileOnly files("libs/modmenu-17.0.0.jar")
 	// Nur für runClient beim Entwickeln, landet nicht in der fertigen Mod
 	modLocalRuntime xaero
 }

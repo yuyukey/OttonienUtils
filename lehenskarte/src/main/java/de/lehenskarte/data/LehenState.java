@@ -145,17 +145,36 @@ public final class LehenState {
 		return s.active && s.geometry.chunkHasLehen(chunkX, chunkZ);
 	}
 
-	/** Füllt out (16×16, Index z*16+x) mit den Farben des Chunks. Gibt false zurück, wenn nichts zu zeichnen ist. */
-	public static boolean chunkColors(int chunkX, int chunkZ, int[] out) {
+	/**
+	 * Füllt out (16×16, Index z*16+x) mit den Farben des Chunks. Gibt false zurück, wenn nichts zu zeichnen ist.
+	 * edges: Grenzen als Blockstreifen einfärben (Minimap). Die World Map bekommt nur Flächen, ihre Grenzen
+	 * zeichnet {@code MapOverlay} als glatte Linien.
+	 */
+	public static boolean chunkColors(int chunkX, int chunkZ, int[] out, boolean edges) {
 		Style s = style;
 		if (!s.active || !s.geometry.chunkHasLehen(chunkX, chunkZ)) return false;
 		int bx = chunkX << 4, bz = chunkZ << 4;
 		for (int z = 0; z < 16; z++) {
 			for (int x = 0; x < 16; x++) {
-				out[(z << 4) | x] = blockColor(s, bx + x, bz + z);
+				out[(z << 4) | x] = edges ? blockColor(s, bx + x, bz + z) : fillColor(s, bx + x, bz + z);
 			}
 		}
 		return true;
+	}
+
+	/** Nur die Fläche, an Grenzen blockgenau per Punkt-im-Polygon statt im 2er-Raster. */
+	private static int fillColor(Style s, int x, int z) {
+		LehenGeometry g = s.geometry;
+		int cx = g.cellX(x), cz = g.cellZ(z);
+		int i = g.cell(cx, cz);
+		int a = g.cell(cx - 1, cz), b = g.cell(cx + 1, cz), c = g.cell(cx, cz - 1), d = g.cell(cx, cz + 1);
+		if (a == i && b == i && c == i && d == i) return i < 0 ? 0 : s.fill[i];
+		double px = x + 0.5, pz = z + 0.5;
+		for (int n : new int[]{i, a, b, c, d}) {
+			LehenGeometry.Shape shape = g.shape(n);
+			if (shape != null && shape.contains(px, pz)) return s.fill[n];
+		}
+		return 0;
 	}
 
 	private static int blockColor(Style s, int x, int z) {

@@ -6,7 +6,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
 
+import net.fabricmc.loader.api.FabricLoader;
+
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -58,29 +63,61 @@ public final class Banners {
 		return Identifier.fromNamespaceAndPath(LehenskarteClient.MOD_ID, "banner/" + name);
 	}
 
+	private static Path cacheFile(String name) {
+		return FabricLoader.getInstance().getConfigDir().resolve("lehenskarte").resolve("cache").resolve("wappen").resolve(name + ".png");
+	}
+
+	/**
+	 * Zuerst das zwischengespeicherte Wappen zeigen (sofort da), dann im Hintergrund das aktuelle laden und
+	 * austauschen, falls es sich geändert hat. So bleiben Wappen aktuell, auch wenn GitHub langsam ist.
+	 */
 	private static void load(String name) {
 		STATE.put(name, State.LOADING);
+		byte[] cached = null;
+		try {
+			Path file = cacheFile(name);
+			if (Files.exists(file)) {
+				cached = Files.readAllBytes(file);
+				register(name, cached);
+			}
+		} catch (Exception e) {
+			cached = null;
+			STATE.put(name, State.LOADING);
+		}
+		byte[] old = cached;
 		HttpRequest req = HttpRequest.newBuilder(URI.create(BASE + name + ".png"))
 				.timeout(Duration.ofSeconds(20))
 				.header("User-Agent", "Lehenskarte-Mod (Minecraft)")
 				.GET().build();
 		HTTP.sendAsync(req, HttpResponse.BodyHandlers.ofByteArray()).whenComplete((r, err) -> {
 			if (err != null || r.statusCode() != 200) {
-				fail(name, err != null ? err.toString() : "HTTP " + r.statusCode());
+				if (old == null) fail(name, err != null ? err.toString() : "HTTP " + r.statusCode());
 				return;
 			}
 			byte[] png = r.body();
+			if (old != null && Arrays.equals(old, png)) return;
+			try {
+				Path file = cacheFile(name);
+				Files.createDirectories(file.getParent());
+				Files.write(file, png);
+			} catch (Exception e) {
+				LehenskarteClient.LOGGER.debug("Wappen {} nicht zwischengespeichert: {}", name, e.toString());
+			}
 			Minecraft.getInstance().execute(() -> {
 				try {
-					NativeImage img = NativeImage.read(png);
-					DynamicTexture tex = new DynamicTexture(() -> "lehenskarte banner " + name, img);
-					Minecraft.getInstance().getTextureManager().register(id(name), tex);
-					STATE.put(name, State.READY);
+					register(name, png);
 				} catch (Exception e) {
-					fail(name, e.toString());
+					if (old == null) fail(name, e.toString());
 				}
 			});
 		});
+	}
+
+	private static void register(String name, byte[] png) throws java.io.IOException {
+		NativeImage img = NativeImage.read(png);
+		DynamicTexture tex = new DynamicTexture(() -> "lehenskarte banner " + name, img);
+		Minecraft.getInstance().getTextureManager().register(id(name), tex);
+		STATE.put(name, State.READY);
 	}
 
 	private static void fail(String name, String why) {

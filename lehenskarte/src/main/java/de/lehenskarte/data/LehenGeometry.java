@@ -231,6 +231,58 @@ public final class LehenGeometry {
 			}
 			shapes.add(new Shape(o.get("id").getAsString(), shapes.size(), rgb, lx, lz, xs, zs, minX, minZ, maxX, maxZ));
 		}
-		return new LehenGeometry(shapes, offsetX, offsetZ, source);
+		return new LehenGeometry(snapNeighbours(shapes), offsetX, offsetZ, source);
+	}
+
+	/** Eckpunkte, die bis zu so viele Blöcke neben der Kante eines Nachbarlehens liegen, werden daraufgesetzt. */
+	private static final double SNAP = 15;
+
+	/**
+	 * Die Polygone der Website teilen sich fast alle Eckpunkte; einige liegen aber ein paar Blöcke daneben.
+	 * Das gäbe doppelte Linien und schmale Lücken, darum werden solche Punkte auf die Nachbarkante gezogen.
+	 */
+	private static List<Shape> snapNeighbours(List<Shape> in) {
+		List<int[]> origX = new ArrayList<>(), origZ = new ArrayList<>();
+		for (Shape s : in) {
+			origX.add(s.xs.clone());
+			origZ.add(s.zs.clone());
+		}
+		List<Shape> out = new ArrayList<>(in.size());
+		for (Shape s : in) {
+			int[] xs = s.xs.clone(), zs = s.zs.clone();
+			for (int v = 0; v < xs.length; v++) {
+				double best = SNAP, bx = 0, bz = 0;
+				boolean found = false, onEdge = false;
+				for (int o = 0; o < in.size(); o++) {
+					if (o == s.index) continue;
+					Shape other = in.get(o);
+					if (xs[v] < other.minX - SNAP || xs[v] > other.maxX + SNAP || zs[v] < other.minZ - SNAP || zs[v] > other.maxZ + SNAP) continue;
+					int[] ox = origX.get(o), oz = origZ.get(o);
+					for (int i = 0, j = ox.length - 1; i < ox.length; j = i++) {
+						double ax = ox[j], az = oz[j], dx = ox[i] - ax, dz = oz[i] - az;
+						double len = dx * dx + dz * dz;
+						double t = len == 0 ? 0 : Math.max(0, Math.min(1, ((xs[v] - ax) * dx + (zs[v] - az) * dz) / len));
+						double px = ax + t * dx, pz = az + t * dz;
+						double d = Math.hypot(px - xs[v], pz - zs[v]);
+						if (d < 0.5) onEdge = true;
+						else if (d < best) {
+							best = d;
+							bx = px;
+							bz = pz;
+							found = true;
+						}
+					}
+				}
+				// Liegt der Punkt schon auf einer Nachbarkante, bleibt er, wo er ist
+				if (found && !onEdge) {
+					xs[v] = (int) Math.round(bx);
+					zs[v] = (int) Math.round(bz);
+				}
+			}
+			int minX = Arrays.stream(xs).min().orElse(0), maxX = Arrays.stream(xs).max().orElse(0);
+			int minZ = Arrays.stream(zs).min().orElse(0), maxZ = Arrays.stream(zs).max().orElse(0);
+			out.add(new Shape(s.id, s.index, s.websiteRgb, s.labelX, s.labelZ, xs, zs, minX, minZ, maxX, maxZ));
+		}
+		return out;
 	}
 }

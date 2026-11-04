@@ -3,8 +3,9 @@
 	"id": "lehenskarte",
 	"version": "${version}",
 	"name": "Lehenskarte",
-	"description": "Zeigt die Lehen von Ottonien mit Grenzen, Farben und Bannern der Gefolge in Xaero's World Map und Minimap. Daten live von karte.ottonien.com. Inoffiziell, von Spielern für Spieler.",
+	"description": "Zeigt die Lehen von Ottonien mit Grenzen, Farben und Bannern der Gefolge in Xaero's World Map und Minimap. Daten live von karte.ottonien.com, Grenzen aus OttoExtra von Skyfuller1303 (mit Erlaubnis). Inoffiziell, von Spielern für Spieler.",
 	"authors": ["yuyukey"],
+	"contributors": ["Skyfuller1303 (Lehensgrenzen aus OttoExtra, mit Erlaubnis)"],
 	"contact": {
 		"sources": "https://github.com/yuyukey/OttonienUtils",
 		"issues": "https://github.com/yuyukey/OttonienUtils/issues"
@@ -12,7 +13,8 @@
 	"license": "MIT",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["de.lehenskarte.LehenskarteClient"]
+		"client": ["de.lehenskarte.LehenskarteClient"],
+		"modmenu": ["de.lehenskarte.gui.LehenskarteModMenu"]
 	},
 	"mixins": ["lehenskarte.mixins.json"],
 	"depends": {
@@ -22,6 +24,7 @@
 		"fabric-api": "*"
 	},
 	"recommends": {
+		"modmenu": "*",
 		"xaeroworldmap": "*",
 		"xaerominimap": "*"
 	}

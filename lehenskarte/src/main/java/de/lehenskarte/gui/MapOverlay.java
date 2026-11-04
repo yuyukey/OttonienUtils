@@ -3,7 +3,9 @@ package de.lehenskarte.gui;
 import de.lehenskarte.Config;
 import de.lehenskarte.data.Banners;
 import de.lehenskarte.data.LehenGeometry;
+import de.lehenskarte.data.LehenGroups;
 import de.lehenskarte.data.LehenState;
+import de.lehenskarte.data.NpcVillages;
 import de.lehenskarte.data.OttonienData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,10 +21,14 @@ import java.util.List;
 
 /** Zeichnet Banner, Namen und das Infofeld über Xaero's World Map (in GUI-Koordinaten). */
 public final class MapOverlay {
-	private static final int BANNER = 18;
 	private static final int PANEL_W = 230;
 
+	/** Ungefähre Breite eines Lehens in Blöcken, für die Zoomstufen. */
+	private static final double LEHEN_SIZE = 350;
+
 	private static int panelX, panelY, panelW, panelH;
+	/** Zoomstufe, auf der die Auswahl getroffen wurde: Sie bleibt beim Zoomen dieselbe Gruppe. */
+	private static int selStage;
 
 	private MapOverlay() {
 	}
@@ -65,119 +71,188 @@ public final class MapOverlay {
 		LehenGeometry geo = st.geometry();
 		OttonienData.Snapshot data = st.data();
 
+		// Beim Rauszoomen Lehen zusammenfassen: erst Freiherrschaften mit ihren Vasallen, dann ganze Machtbereiche.
+		// Die Stufen werden weich überblendet; Maus und Auswahl richten sich nach der überwiegenden Stufe.
+		double guiPerBlock = scale / screenScale;
+		double lehenPx = guiPerBlock * LEHEN_SIZE;
+		float[] weights = weights(lehenPx);
+		int stage = 0;
+		for (int k = 1; k < weights.length; k++) if (weights[k] > weights[stage]) stage = k;
+		LehenGroups groups = LehenGroups.of(geo, data);
+
 		// Auswahl und Lehen unter der Maus sofort hervorheben, ohne dass Xaero Kacheln neu berechnen muss
 		LehenGeometry.Shape hovered = geo.at(toWorldX(mouseX, camX, scale, screenScale), toWorldZ(mouseY, camZ, scale, screenScale));
 		LehenGeometry.Shape sel = geo.shape(st.selected());
-		if (sel != null) {
-			fillShape(g, sel, camX, camZ, scale, screenScale, 0x38FFFFFF);
-			outlineShape(g, sel, camX, camZ, scale, screenScale, 0xF0FFFFFF, 1);
+		LehenGroups.Group hoverGroup = hovered != null ? groups.group(stage, hovered.index()) : null;
+		LehenGroups.Group selGroup = sel != null ? groups.group(selStage, sel.index()) : null;
+		var win = mc.getWindow();
+		BorderRenderer.View view = new BorderRenderer.View(camX, camZ, scale, win.getWidth() / 2.0, win.getHeight() / 2.0,
+				win.getWidth(), win.getHeight());
+		if (selGroup != null) {
+			for (int m : selGroup.members()) BorderRenderer.fill(g, geo.shape(m), view, screenScale, 0x38FFFFFF);
 		}
-		if (hovered != null && hovered != sel) outlineShape(g, hovered, camX, camZ, scale, screenScale, 0x90FFFFFF, 0);
+		BorderRenderer.drawAll(g, st, groups, weights, view, screenScale);
+		if (hoverGroup != null && hoverGroup != selGroup) BorderRenderer.groupOutline(g, st, hoverGroup, view, screenScale, 2f, 0xA0FFFFFF);
+		if (selGroup != null) BorderRenderer.groupOutline(g, st, selGroup, view, screenScale, (float) Math.max(3, screenScale * 1.5), 0xF0FFFFFF);
 
-		// Banner: nur, wenn die Lehen groß genug auf dem Bildschirm sind
-		double guiPerBlock = scale / screenScale;
-		if (Config.get().bannersOnMap && guiPerBlock * 350 >= BANNER + 4) {
-			int w = g.guiWidth(), h = g.guiHeight();
-			for (LehenGeometry.Shape s : geo.shapes()) {
-				int x = (int) Math.round(toGuiX(s.labelX(), camX, scale, screenScale));
-				int y = (int) Math.round(toGuiY(s.labelZ(), camZ, scale, screenScale));
-				if (x < -BANNER || y < -BANNER || x > w + BANNER || y > h + BANNER) continue;
-				OttonienData.Faction f = data.owner(s.id());
-				if (f == null) {
-					if (guiPerBlock * 350 >= 60) {
-						OttonienData.Region r = data.region(s.id());
-						String name = r != null ? r.name() : s.id();
-						g.drawCenteredString(font, name, x, y - 4, 0xCCFFFFFF);
-					}
-					continue;
-				}
-				Identifier tex = Banners.texture(f.banner());
-				int bx = x - BANNER / 2, by = y - BANNER / 2;
-				if (s.index() == st.selected()) g.fill(bx - 2, by - 2, bx + BANNER + 2, by + BANNER + 2, 0xC0FFFFFF);
-				if (tex != null) g.blit(RenderPipelines.GUI_TEXTURED, tex, bx, by, 0, 0, BANNER, BANNER, 16, 16, 16, 16);
-				if (guiPerBlock * 350 >= 70) g.drawCenteredString(font, f.name(), x, by + BANNER + 2, 0xFFFFFFFF);
+		// Wappen: eins pro Lehen bzw. pro zusammengefasster Gruppe, Größe wächst mit dem Zoom
+		if (Config.get().bannersOnMap && lehenPx >= 5) {
+			for (int k = 0; k < weights.length; k++) {
+				// freie und gesperrte Lehen sehen auf jeder Stufe gleich aus: nur einmal, auf der überwiegenden Stufe
+				if (weights[k] > 0.02f || k == stage) drawBanners(g, font, geo, data, groups, k, weights[k], k == stage, lehenPx, camX, camZ, scale, screenScale);
 			}
 		}
 
-		// Name des Lehens unter der Maus
+		// NPC-Dörfer: Glocke und Name; liegt die Maus darauf, steht das Dorf statt des Lehens im Hinweis
+		NpcVillages.Village hoverVillage = Config.get().npcVillages && lehenPx >= 5
+				? drawVillages(g, font, lehenPx, mouseX, mouseY, camX, camZ, scale, screenScale) : null;
+		if (hoverVillage != null) {
+			String text = "NPC-Dorf " + hoverVillage.name() + " (" + hoverVillage.x() + ", " + hoverVillage.z() + ")";
+			int tw = font.width(text);
+			int tx = mouseX + 10, ty = mouseY - 14;
+			g.fill(tx - 3, ty - 3, tx + tw + 3, ty + 11, 0xB0000000);
+			g.drawString(font, text, tx, ty, 0xFFFFE9A6, false);
+			hovered = null;
+		}
+
+		// Name des Lehens bzw. der Gruppe unter der Maus
 		if (hovered != null) {
-			String text = title(data, hovered);
+			String text = title(data, geo, hoverGroup != null ? hoverGroup : groups.group(0, hovered.index()));
 			int tw = font.width(text);
 			int tx = mouseX + 10, ty = mouseY - 14;
 			g.fill(tx - 3, ty - 3, tx + tw + 3, ty + 11, 0xB0000000);
 			g.drawString(font, text, tx, ty, 0xFFFFE9A6, false);
 		}
 
-		if (sel != null) drawPanel(g, font, data, sel);
+		if (sel != null) drawPanel(g, font, data, sel, selGroup != null ? selGroup.members().length : 1);
 	}
 
-	/** Füllt das Polygon zeilenweise in GUI-Pixeln (Scanline). */
-	private static void fillShape(GuiGraphics g, LehenGeometry.Shape s, double camX, double camZ, double scale, double screenScale, int color) {
-		int w = g.guiWidth(), h = g.guiHeight();
-		int from = Math.max(0, (int) Math.floor(toGuiY(s.minZ(), camZ, scale, screenScale)));
-		int to = Math.min(h - 1, (int) Math.ceil(toGuiY(s.maxZ(), camZ, scale, screenScale)));
-		int[] xs = s.xs(), zs = s.zs();
-		double[] cross = new double[xs.length];
-		for (int y = from; y <= to; y++) {
-			double wz = toWorldZ(y + 0.5, camZ, scale, screenScale);
-			int n = 0;
-			for (int i = 0, j = xs.length - 1; i < xs.length; j = i++) {
-				if ((zs[i] > wz) != (zs[j] > wz)) cross[n++] = xs[i] + (wz - zs[i]) * (xs[j] - xs[i]) / (double) (zs[j] - zs[i]);
-			}
-			java.util.Arrays.sort(cross, 0, n);
-			for (int k = 0; k + 1 < n; k += 2) {
-				int x0 = (int) Math.max(0, Math.round(toGuiX(cross[k], camX, scale, screenScale)));
-				int x1 = (int) Math.min(w, Math.round(toGuiX(cross[k + 1], camX, scale, screenScale)));
-				if (x1 > x0) g.fill(x0, y, x1, y + 1, color);
-			}
-		}
-	}
-
-	/** Zeichnet die Umrandung, nur den sichtbaren Teil jeder Kante. thick 0 = 1 Pixel, 1 = 2 Pixel. */
-	private static void outlineShape(GuiGraphics g, LehenGeometry.Shape s, double camX, double camZ, double scale, double screenScale, int color, int thick) {
-		int w = g.guiWidth(), h = g.guiHeight();
-		int[] xs = s.xs(), zs = s.zs();
-		for (int i = 0, j = xs.length - 1; i < xs.length; j = i++) {
-			double[] seg = clip(toGuiX(xs[j], camX, scale, screenScale), toGuiY(zs[j], camZ, scale, screenScale),
-					toGuiX(xs[i], camX, scale, screenScale), toGuiY(zs[i], camZ, scale, screenScale), -2, -2, w + 2, h + 2);
-			if (seg == null) continue;
-			double dx = seg[2] - seg[0], dy = seg[3] - seg[1];
-			int steps = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)));
-			for (int k = 0; k <= steps; k++) {
-				double t = steps == 0 ? 0 : (double) k / steps;
-				int px = (int) Math.floor(seg[0] + dx * t), py = (int) Math.floor(seg[1] + dy * t);
-				g.fill(px - thick, py - thick, px + 1, py + 1, color);
-			}
-		}
-	}
-
-	/** Liang-Barsky: schneidet eine Strecke auf ein Rechteck zu, null wenn ganz außerhalb. */
-	private static double[] clip(double x0, double y0, double x1, double y1, double minX, double minY, double maxX, double maxY) {
-		double t0 = 0, t1 = 1, dx = x1 - x0, dy = y1 - y0;
-		double[] p = {-dx, dx, -dy, dy}, q = {x0 - minX, maxX - x0, y0 - minY, maxY - y0};
-		for (int i = 0; i < 4; i++) {
-			if (p[i] == 0) {
-				if (q[i] < 0) return null;
-			} else {
-				double r = q[i] / p[i];
-				if (p[i] < 0) t0 = Math.max(t0, r);
-				else t1 = Math.min(t1, r);
-				if (t0 > t1) return null;
-			}
-		}
-		return new double[]{x0 + t0 * dx, y0 + t0 * dy, x0 + t1 * dx, y0 + t1 * dy};
-	}
-
-	private static String title(OttonienData.Snapshot data, LehenGeometry.Shape s) {
+	private static String title(OttonienData.Snapshot data, LehenGeometry geo, LehenGroups.Group grp) {
+		LehenGeometry.Shape s = geo.shape(grp.root());
 		OttonienData.Region r = data.region(s.id());
 		OttonienData.Faction f = data.owner(s.id());
 		String lehen = r != null ? r.name() : s.id();
+		if (grp.members().length > 1 && f != null) return f.name() + " (" + grp.members().length + " Lehen)";
 		if (f != null) return f.name().equals(lehen) ? lehen : lehen + " – " + f.name();
 		if (r != null && !r.enabled()) return lehen + " (gesperrt)";
 		return lehen + " (frei)";
 	}
 
-	private static void drawPanel(GuiGraphics g, Font font, OttonienData.Snapshot data, LehenGeometry.Shape s) {
+	private static final Identifier BELL = Identifier.withDefaultNamespace("textures/item/bell.png");
+
+	/** Zeichnet die NPC-Dörfer und gibt das Dorf unter der Maus zurück. */
+	private static NpcVillages.Village drawVillages(GuiGraphics g, Font font, double lehenPx, int mouseX, int mouseY,
+												   double camX, double camZ, double scale, double screenScale) {
+		int size = (int) Math.round(Math.max(10, Math.min(16, lehenPx * 0.25)));
+		boolean names = lehenPx >= 30;
+		NpcVillages.Village hover = null;
+		for (NpcVillages.Village v : NpcVillages.all()) {
+			int x = (int) Math.round(toGuiX(v.x() + 0.5, camX, scale, screenScale));
+			int y = (int) Math.round(toGuiY(v.z() + 0.5, camZ, scale, screenScale));
+			if (x < -100 || y < -size || x > g.guiWidth() + 100 || y > g.guiHeight() + size) continue;
+			int bx = x - size / 2, by = y - size / 2;
+			g.blit(RenderPipelines.GUI_TEXTURED, BELL, bx, by, 0, 0, size, size, 16, 16, 16, 16);
+			if (names) outlined(g, font, v.name(), x, by + size + 2, 0xFFFFE08A, 1f);
+			if (mouseX >= bx - 2 && mouseX < bx + size + 2 && mouseY >= by - 2 && mouseY < by + size + 2) hover = v;
+		}
+		return hover;
+	}
+
+	/** Reserviert ein Rechteck für Wappen und Namen; false, wenn es sich mit einem schon belegten überschneidet. */
+	private static boolean place(List<int[]> taken, int x0, int y0, int x1, int y1) {
+		for (int[] r : taken) if (x0 < r[2] && x1 > r[0] && y0 < r[3] && y1 > r[1]) return false;
+		taken.add(new int[]{x0, y0, x1, y1});
+		return true;
+	}
+
+	/** Discrete Stufe für Klicks: 0 = einzelne Lehen, 1 = Freiherrschaften o. Ä. mit Vasallen, 2 = ganze Machtbereiche. */
+	private static int stage(double lehenPx) {
+		float[] w = weights(lehenPx);
+		int best = 0;
+		for (int k = 1; k < w.length; k++) if (w[k] > w[best]) best = k;
+		return best;
+	}
+
+	/** Anteil jeder Stufe bei dieser Zoomstufe; an den Übergängen werden zwei Stufen weich überblendet. */
+	private static float[] weights(double lehenPx) {
+		if (!Config.get().groupOnZoomOut) return new float[]{1, 0, 0};
+		float a = smooth(lehenPx, 36, 56);
+		float b = smooth(lehenPx, 16, 25);
+		return new float[]{a, (1 - a) * b, (1 - a) * (1 - b)};
+	}
+
+	private static float smooth(double v, double from, double to) {
+		float t = (float) Math.max(0, Math.min(1, (v - from) / (to - from)));
+		return t * t * (3 - 2 * t);
+	}
+
+	/** Wappengröße je Stufe: wächst mit dem Zoom, zusammengefasste Bereiche etwas größer. */
+	private static int bannerSize(int stage, double lehenPx) {
+		double f = stage == 0 ? 0.38 : stage == 1 ? 0.95 : 1.6;
+		return (int) Math.round(Math.max(12, Math.min(30, lehenPx * f)));
+	}
+
+	private static void drawBanners(GuiGraphics g, Font font, LehenGeometry geo, OttonienData.Snapshot data, LehenGroups groups,
+									int stage, float alpha, boolean withFree, double lehenPx, double camX, double camZ, double scale, double screenScale) {
+		int groupSize = bannerSize(stage, lehenPx);
+		if (stage == 0 && !Config.get().groupOnZoomOut && lehenPx < 16) return;
+		int w = g.guiWidth(), h = g.guiHeight();
+		// größere Bereiche zuerst; was sich mit einem schon gezeichneten Wappen überschneiden würde, entfällt
+		List<LehenGroups.Group> order = new ArrayList<>();
+		for (LehenGeometry.Shape s : geo.shapes()) {
+			LehenGroups.Group grp = groups.group(stage, s.index());
+			if (grp != null && grp.root() == s.index() && (withFree || data.owner(s.id()) != null)) order.add(grp);
+		}
+		// besetzte Lehen vor freien, größere Bereiche zuerst
+		order.sort((a, b) -> {
+			boolean fa = data.owner(geo.shape(a.root()).id()) == null, fb = data.owner(geo.shape(b.root()).id()) == null;
+			if (fa != fb) return fa ? 1 : -1;
+			return Integer.compare(b.members().length, a.members().length);
+		});
+		List<int[]> taken = new ArrayList<>();
+		for (LehenGroups.Group grp : order) {
+			LehenGeometry.Shape root = geo.shape(grp.root());
+			OttonienData.Faction f = data.owner(root.id());
+			// freie und gesperrte Lehen: leeres Wappen „kein Wappen“ und der Name des Lehens
+			float a = f != null ? alpha : 1f;
+			String name;
+			if (f != null) {
+				name = f.name();
+			} else {
+				OttonienData.Region r = data.region(root.id());
+				name = r != null ? r.name() : root.id();
+			}
+			int x = (int) Math.round(toGuiX(grp.labelX(), camX, scale, screenScale));
+			int y = (int) Math.round(toGuiY(grp.labelZ(), camZ, scale, screenScale));
+			// freie Lehen bleiben einzeln, ihr Wappen wächst darum nicht mit wie das zusammengefasster Bereiche
+			int size = f != null ? groupSize : Math.min(groupSize, bannerSize(0, lehenPx));
+			if (x < -size * 4 || y < -size || x > w + size * 4 || y > h + size) continue;
+			int bx = x - size / 2, by = y - size / 2;
+			boolean showName = f == null ? lehenPx >= 60 : stage == 0 ? lehenPx >= 60 : lehenPx >= 9;
+			int nw = showName ? font.width(name) : 0;
+			int half = Math.max(size, nw) / 2;
+			if (!place(taken, x - half, by, x + half, by + size + (showName ? 11 : 0))) continue;
+			Identifier tex = Banners.texture(f != null ? f.banner() : "");
+			int tint = (Math.round(a * (f != null ? 255 : 220)) << 24) | 0xFFFFFF;
+			if (tex != null) g.blit(RenderPipelines.GUI_TEXTURED, tex, bx, by, 0, 0, size, size, 16, 16, 16, 16, tint);
+			if (showName) outlined(g, font, name, x, by + size + 2, f != null ? 0xFFFFFFFF : 0xFFD8D8D8, a);
+		}
+	}
+
+	/** Zentrierter Text mit dunklem Rand, damit er auf heller Karte und hellem Gelände lesbar bleibt. */
+	private static void outlined(GuiGraphics g, Font font, String text, int cx, int y, int color, float alpha) {
+		int a = Math.round(alpha * (color >>> 24));
+		if (a < 8) return;
+		int x = cx - font.width(text) / 2;
+		int shadow = (Math.round(a * 0.85f) << 24) | 0x101010;
+		g.drawString(font, text, x - 1, y, shadow, false);
+		g.drawString(font, text, x + 1, y, shadow, false);
+		g.drawString(font, text, x, y - 1, shadow, false);
+		g.drawString(font, text, x, y + 1, shadow, false);
+		g.drawString(font, text, x, y, (a << 24) | (color & 0xFFFFFF), false);
+	}
+
+	private static void drawPanel(GuiGraphics g, Font font, OttonienData.Snapshot data, LehenGeometry.Shape s, int count) {
 		OttonienData.Region r = data.region(s.id());
 		OttonienData.Faction f = data.owner(s.id());
 		String lehen = r != null ? r.name() : s.id();
@@ -192,7 +267,7 @@ public final class MapOverlay {
 		String sub;
 		if (f != null) {
 			head = f.name();
-			sub = f.rank() + " · Lehen " + lehen;
+			sub = count > 1 ? f.rank() + " · " + count + " Lehen" : f.rank() + " · Lehen " + lehen;
 			lines.add(new Line("Anführer: ", f.leader().isEmpty() ? "–" : f.leader()));
 			lines.add(new Line("Mitglieder: ", String.valueOf(f.members())));
 			if (f.hasLord()) {
@@ -204,6 +279,12 @@ public final class MapOverlay {
 		} else {
 			head = lehen;
 			sub = r != null && !r.enabled() ? "Gesperrtes Lehen" : "Freies Lehen – kein Gefolge";
+		}
+
+		// Bergbau und Bonus des Lehens (nur bei einem einzelnen Lehen, nicht bei zusammengefassten Bereichen)
+		if (r != null && count == 1) {
+			if (!r.mines().isBlank()) lines.add(new Line("Bergbau: ", r.mines()));
+			if (!r.bonus().isBlank()) lines.add(new Line("Bonus: ", r.bonus()));
 		}
 
 		List<FormattedCharSequence> body = new ArrayList<>();
@@ -258,7 +339,14 @@ public final class MapOverlay {
 			return;
 		}
 		LehenGeometry.Shape s = LehenState.geometry().at(toWorldX(guiX, camX, scale, screenScale), toWorldZ(guiY, camZ, scale, screenScale));
-		int index = s == null || s.index() == LehenState.selected() ? -1 : s.index();
+		if (s == null) {
+			LehenState.select(-1);
+			return;
+		}
+		int stage = stage(scale / screenScale * LEHEN_SIZE);
+		int root = LehenGroups.of(LehenState.geometry(), LehenState.style().data()).root(stage, s.index());
+		int index = root == LehenState.selected() && stage == selStage ? -1 : root;
+		selStage = stage;
 		LehenState.select(index);
 	}
 }

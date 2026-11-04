@@ -7,6 +7,7 @@ import de.lehenskarte.data.LehenGeometry;
 import de.lehenskarte.data.LehenState;
 import de.lehenskarte.data.OttonienData;
 import de.lehenskarte.gui.LehenHud;
+import de.lehenskarte.gui.SettingsScreen;
 import de.lehenskarte.xaero.XaeroBridge;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -35,11 +36,19 @@ public class LehenskarteClient implements ClientModInitializer {
 
 	public static KeyMapping toggleKey;
 	private long lastFetch;
+	/** Stand, mit dem neue Daten für die Chat-Meldungen verglichen werden. */
+	private static OttonienData.Snapshot lastKnown = OttonienData.Snapshot.EMPTY;
+	/** Einstellungen erst im nächsten Tick öffnen, sonst schließt der Chat sie gleich wieder. */
+	private static boolean openSettings;
 
 	@Override
 	public void onInitializeClient() {
 		Config.load();
 		LehenState.reloadGeometry();
+		// letzten Stand sofort zeigen, die API wird danach abgefragt
+		OttonienData.loadCache();
+		LehenState.rebuild();
+		lastKnown = OttonienData.get();
 
 		KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 		toggleKey = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.lehenskarte.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
@@ -49,6 +58,10 @@ public class LehenskarteClient implements ClientModInitializer {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, ctx) -> dispatcher.register(
 				ClientCommandManager.literal("lehenskarte")
 						.executes(c -> status(c.getSource()))
+						.then(ClientCommandManager.literal("einstellungen").executes(c -> {
+							openSettings = true;
+							return 1;
+						}))
 						.then(ClientCommandManager.literal("debug").executes(c -> debug(c.getSource())))
 						.then(ClientCommandManager.literal("neuladen").executes(c -> reload(c.getSource())))
 						.then(ClientCommandManager.literal("an").executes(c -> setOverlay(c.getSource(), true)))
@@ -62,6 +75,10 @@ public class LehenskarteClient implements ClientModInitializer {
 	}
 
 	private void onTick(Minecraft mc) {
+		if (openSettings) {
+			openSettings = false;
+			mc.setScreen(new SettingsScreen(mc.screen));
+		}
 		while (toggleKey.consumeClick()) {
 			Config cfg = Config.get();
 			cfg.overlayEnabled = !cfg.overlayEnabled;
@@ -92,7 +109,37 @@ public class LehenskarteClient implements ClientModInitializer {
 		OttonienData.refresh(() -> Minecraft.getInstance().execute(() -> {
 			LehenState.rebuild();
 			XaeroBridge.refresh();
+			announceChanges(lastKnown, OttonienData.get());
+			lastKnown = OttonienData.get();
 		}));
+	}
+
+	/** Meldet im Chat, welche Lehen den Besitzer gewechselt haben, frei geworden sind oder den Lehnsherrn gewechselt haben. */
+	private static void announceChanges(OttonienData.Snapshot before, OttonienData.Snapshot now) {
+		Minecraft mc = Minecraft.getInstance();
+		if (!Config.get().notifyChanges || mc.player == null || before.regions().isEmpty() || now.regions().isEmpty()) return;
+		java.util.List<Component> lines = new java.util.ArrayList<>();
+		java.util.List<String> ids = new java.util.ArrayList<>(now.regions().keySet());
+		ids.sort(java.util.Comparator.comparing(id -> now.region(id).name()));
+		for (String id : ids) {
+			OttonienData.Faction a = before.owner(id), b = now.owner(id);
+			String lehen = now.region(id).name();
+			String nameA = a != null ? a.name() : null, nameB = b != null ? b.name() : null;
+			if (java.util.Objects.equals(nameA, nameB)) {
+				if (a != null && b != null && !a.lordName().equals(b.lordName())) {
+					lines.add(Component.literal(b.name() + (b.hasLord() ? " ist jetzt Vasall von " + b.lordName() : " ist jetzt unabhängig")
+							+ (a.hasLord() ? " (vorher " + a.lordName() + ")" : "")).withStyle(ChatFormatting.GRAY));
+				}
+				continue;
+			}
+			if (b == null) lines.add(Component.literal(lehen + " ist jetzt frei (vorher " + nameA + ")").withStyle(ChatFormatting.GRAY));
+			else lines.add(Component.literal(lehen + " gehört jetzt " + nameB + (nameA != null ? " (vorher " + nameA + ")" : "")).withStyle(ChatFormatting.GRAY));
+		}
+		if (lines.isEmpty()) return;
+		mc.player.displayClientMessage(Component.literal("[Lehenskarte] Änderungen bei den Lehen:").withStyle(ChatFormatting.GOLD), false);
+		int max = 8;
+		for (int i = 0; i < Math.min(max, lines.size()); i++) mc.player.displayClientMessage(Component.literal(" • ").append(lines.get(i)), false);
+		if (lines.size() > max) mc.player.displayClientMessage(Component.literal(" … und " + (lines.size() - max) + " weitere").withStyle(ChatFormatting.DARK_GRAY), false);
 	}
 
 	// ---------------------------------------------------------------- Befehle
@@ -109,7 +156,7 @@ public class LehenskarteClient implements ClientModInitializer {
 		say(src, LehenState.geometry().shapes().size() + " Lehen-Grenzen (" + LehenState.geometry().source + "), "
 				+ data.regions().size() + " Lehen und " + data.factionByUuid().size() + " Gefolge von der API"
 				+ (OttonienData.lastError() != null ? " – Fehler: " + OttonienData.lastError() : ""), ChatFormatting.GRAY);
-		say(src, "Befehle: debug, neuladen, an, aus, verschieben <x> <z>, zuruecksetzen", ChatFormatting.GRAY);
+		say(src, "Befehle: einstellungen, debug, neuladen, an, aus, verschieben <x> <z>, zuruecksetzen", ChatFormatting.GRAY);
 		return 1;
 	}
 
@@ -156,6 +203,7 @@ public class LehenskarteClient implements ClientModInitializer {
 
 	private static int reload(FabricClientCommandSource src) {
 		LehenState.reloadGeometry();
+		de.lehenskarte.data.NpcVillages.reload();
 		fetch();
 		XaeroBridge.refresh();
 		say(src, "Lehenskarte: Grenzen neu geladen, Daten werden abgerufen …", ChatFormatting.GOLD);
