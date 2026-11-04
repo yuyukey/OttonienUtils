@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.0
+
+- **Mitgliederliste:** Fährst du im Teilen-Fenster mit der Maus über ein Lehen, siehst du, wer dessen Code benutzt und wann zuletzt, z. B. „Kamerad – vor 3 Std.“. Die Zahl hinter dem Lehen zeigt, wie viele es sind.
+- Die Namen meldet jede Mod selbst. Wer ein Lehen mit ✕ verlässt oder 30 Tage nicht da war, fällt aus der Liste.
+- Dafür schickt die Mod deinen Minecraft-Namen an jedes Lehen, dessen Code du hast, auch wenn du nur zuschaust.
+- Braucht das Server-Update dieser Version, sonst bleibt die Liste leer. Alles andere funktioniert auch ohne.
+- **Anmeldung beim Serverbeitritt:** Der Abgleich wartet jetzt, bis du in der Welt bist, und danach noch 5 Sekunden. Vorher lief er schon im Hauptmenü und beim Verbinden mit vielen Verbindungen gleichzeitig. Das konnte die Anmeldung bei Mojang stören („Anmeldung fehlgeschlagen … versuche es erneut“). Außerdem fragt die Mod jetzt höchstens zwei Lehen gleichzeitig ab.
+
 ## 1.7.0
 
 - **Nur noch Lehen-Codes:** Jedes Lehen wird über einen **eigenen Code** geteilt, einen Gruppen-Code gibt es nicht mehr. Haben Spieler aus verschiedenen Gruppen Rechte auf dasselbe Lehen, geben sie sich den Code dieses Lehens. Dann sehen alle dessen Minen und Timer, aber nichts von deinen anderen Lehen.

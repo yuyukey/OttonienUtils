@@ -252,6 +252,7 @@ public final class MineManager {
 	/** Verlässt ein Lehen: seine Minen und Timer verschwinden nur hier, bei den anderen bleiben sie. */
 	public void leaveLehen(String area) {
 		ModConfig cfg = ModConfig.get();
+		SyncManager.get().reportLeft(cfg.mappedCode(area));
 		mines.values().removeIf(m -> {
 			boolean gone = !m.area.isEmpty() && m.area.equalsIgnoreCase(area);
 			if (gone) timers.remove(m.id);

@@ -31,12 +31,23 @@ public final class SyncManager {
 	private static final SyncManager INSTANCE = new SyncManager();
 	private static final Gson GSON = new Gson();
 	private static final int POLL_TICKS = 20 * 10;
+	/** So oft meldet die Mod pro Code, dass man noch dabei ist. */
+	private static final long REPORT_MS = 5 * 60_000L;
+	/** Wer länger nicht da war, fällt aus der Mitgliederliste. */
+	private static final long MEMBER_MAX_AGE_MS = 30L * 24 * 60 * 60_000L;
 
 	private final HttpClient http = HttpClient.newBuilder()
 			.version(HttpClient.Version.HTTP_1_1)
 			.connectTimeout(Duration.ofSeconds(8))
 			.build();
 	private int tickCounter = POLL_TICKS;
+	/** So lange nach dem Betreten eines Servers wartet der Sync, bis Anmeldung und Ressourcenpaket durch sind. */
+	private static final int JOIN_QUIET_TICKS = 20 * 5;
+	private static final int MAX_PARALLEL = 2;
+	/** Ticks seit Betreten der Welt, -1 = in keiner Welt. */
+	private int worldTicks = -1;
+	/** Codes, die als Nächstes abgefragt werden. */
+	private final Set<String> pollQueue = new LinkedHashSet<>();
 	private final Set<String> pollInFlight = new HashSet<>();
 	private final Set<String> flushInFlight = new HashSet<>();
 	private int retryTicks;
@@ -46,6 +57,17 @@ public final class SyncManager {
 	private final Map<String, String> errors = new HashMap<>();
 	private final Set<String> seen = new HashSet<>();
 	private long lastSuccess;
+	/** Mitglieder je Code, wie sie der Server zuletzt geliefert hat. */
+	private final Map<String, Map<String, Member>> members = new HashMap<>();
+	/** Wann man sich bei welchem Code zuletzt gemeldet hat. */
+	private final Map<String, Long> reported = new HashMap<>();
+
+	/** Ein Eintrag der Mitgliederliste. Den Namen meldet jede Mod selbst, er ist nicht überprüft. */
+	public static final class Member {
+		public String name;
+		public long updatedAt;
+		public boolean left;
+	}
 
 	public static SyncManager get() {
 		return INSTANCE;
@@ -105,12 +127,31 @@ public final class SyncManager {
 
 	public void tick() {
 		if (!isActive()) return;
+		// Im Menü und beim Verbinden still bleiben: Die Anmeldung bei Mojang soll die Leitung für sich haben.
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null || mc.player == null) {
+			worldTicks = -1;
+			return;
+		}
+		if (worldTicks < 0) tickCounter = POLL_TICKS;
+		if (worldTicks < JOIN_QUIET_TICKS) worldTicks++;
+		if (!mc.hasSingleplayerServer() && worldTicks < JOIN_QUIET_TICKS) return;
 		if (++tickCounter >= POLL_TICKS) {
 			tickCounter = 0;
-			for (String code : codes()) poll(code);
+			pollQueue.addAll(codes());
 		}
+		drainPolls();
 		if (retryTicks > 0) retryTicks--;
 		else flush();
+	}
+
+	/** Höchstens MAX_PARALLEL Abfragen gleichzeitig, statt für jedes Lehen sofort eine eigene Verbindung. */
+	private void drainPolls() {
+		while (!pollQueue.isEmpty() && pollInFlight.size() < MAX_PARALLEL) {
+			String code = pollQueue.iterator().next();
+			pollQueue.remove(code);
+			poll(code);
+		}
 	}
 
 	/** Sofort abfragen, z. B. nach Änderung der Einstellungen. */
@@ -140,6 +181,7 @@ public final class SyncManager {
 		pollInFlight.add(code);
 		http.sendAsync(req, HttpResponse.BodyHandlers.ofString()).whenComplete((resp, err) -> Minecraft.getInstance().execute(() -> {
 			pollInFlight.remove(code);
+			drainPolls();
 			if (err != null) {
 				errors.put(code, "Keine Verbindung");
 				return;
@@ -156,7 +198,8 @@ public final class SyncManager {
 				// Server wieder erreichbar: liegengebliebene Änderungen sofort senden
 				retryTicks = 0;
 				// Gerade neu entdeckte Lehen gleich abfragen, nicht erst in zehn Sekunden
-				for (String c : codes()) if (!seen.contains(c) && !errors.containsKey(c)) poll(c);
+				for (String c : codes()) if (!seen.contains(c) && !errors.containsKey(c) && !pollInFlight.contains(c)) pollQueue.add(c);
+				drainPolls();
 			} catch (Exception e) {
 				MinenTimerClient.LOGGER.warn("Sync-Antwort konnte nicht gelesen werden", e);
 				errors.put(code, "Ungültige Antwort");
@@ -228,6 +271,20 @@ public final class SyncManager {
 		// In den eigenen Code wird nichts mehr geschrieben
 		if (own) return;
 
+		Map<String, Member> list = new HashMap<>();
+		if (root != null && root.isJsonObject() && root.getAsJsonObject().get("members") instanceof JsonObject obj) {
+			for (Map.Entry<String, JsonElement> e : obj.entrySet()) {
+				try {
+					Member m = GSON.fromJson(e.getValue(), Member.class);
+					if (m != null && m.name != null) list.put(m.name, m);
+				} catch (Exception ex) {
+					MinenTimerClient.LOGGER.warn("Ungültiges Mitglied {} im Sync", e.getKey());
+				}
+			}
+		}
+		members.put(code, list);
+		report(code, false);
+
 		// Lokale Einträge dieses Codes hochladen, die auf dem Server fehlen oder älter sind
 		for (Mine m : mgr.allMinesIncludingDeleted().values()) {
 			if (code.equals(cfg.codeFor(m.area)) && isNewer(m.updatedAt, remoteMines.get(m.id))) queue(code, "mines/" + safeKey(m.id), GSON.toJsonTree(m));
@@ -255,6 +312,38 @@ public final class SyncManager {
 		if (remote == null || !remote.isJsonObject()) return true;
 		JsonElement u = remote.getAsJsonObject().get("updatedAt");
 		return u == null || localUpdatedAt > u.getAsLong();
+	}
+
+	/** Meldet den eigenen Namen bei einem Code, höchstens alle paar Minuten (oder sofort beim Verlassen). */
+	private void report(String code, boolean left) {
+		String name = MineManager.playerName();
+		if (name == null || !name.matches("[A-Za-z0-9_]{1,16}")) return;
+		long now = System.currentTimeMillis();
+		Long last = reported.get(code);
+		if (!left && last != null && now - last < REPORT_MS) return;
+		reported.put(code, now);
+		Member me = new Member();
+		me.name = name;
+		me.updatedAt = now;
+		me.left = left;
+		queue(code, "members/" + name, GSON.toJsonTree(me));
+		members.computeIfAbsent(code, k -> new HashMap<>()).put(name, me);
+	}
+
+	/** Beim Verlassen eines Lehens: aus dessen Mitgliederliste austragen. */
+	public void reportLeft(String code) {
+		if (code != null && !code.isBlank()) report(code, true);
+	}
+
+	/** Wer den Code in den letzten 30 Tagen benutzt hat, zuletzt Aktive zuerst. */
+	public List<Member> members(String code) {
+		long now = System.currentTimeMillis();
+		List<Member> list = new ArrayList<>();
+		for (Member m : members.getOrDefault(code, Map.of()).values()) {
+			if (!m.left && now - m.updatedAt < MEMBER_MAX_AGE_MS) list.add(m);
+		}
+		list.sort((a, b) -> Long.compare(b.updatedAt, a.updatedAt));
+		return list;
 	}
 
 	public void pushMine(Mine mine) {

@@ -70,8 +70,15 @@ TIMER_FIELDS = {
     "updatedAt": _int(0, 2**53),
     "by": _str(32),
 }
+# Wer einen Code benutzt (meldet die Mod selbst, nur zur Anzeige)
+MEMBER_FIELDS = {
+    "name": _str(16),
+    "updatedAt": _int(0, 2**53),
+    "left": _bool,
+}
+MEMBER_NAME = re.compile(r"^[A-Za-z0-9_]{1,16}$")
 GROUP_PATH = re.compile(r"^/minentimer/([A-Za-z0-9_\-]{1,64})\.json$")
-ENTRY_KEY = re.compile(r"^(mines|timers)/([A-Za-z0-9_\-]{1,100})$")
+ENTRY_KEY = re.compile(r"^(mines|timers|members)/([A-Za-z0-9_\-]{1,100})$")
 
 lock = threading.Lock()
 db = {}
@@ -96,12 +103,12 @@ def save(text):
 
 
 def valid_entry(section, entry, value, now):
-    """Prüft eine Mine bzw. einen Timer. Liefert True, wenn der Eintrag gespeichert werden darf."""
+    """Prüft eine Mine, einen Timer oder ein Mitglied. Liefert True, wenn der Eintrag gespeichert werden darf."""
     if not isinstance(value, dict):
         return False
     if len(json.dumps(value, separators=(",", ":"))) > MAX_ENTRY_BYTES:
         return False
-    fields = MINE_FIELDS if section == "mines" else TIMER_FIELDS
+    fields = {"mines": MINE_FIELDS, "timers": TIMER_FIELDS, "members": MEMBER_FIELDS}[section]
     for field, check in fields.items():
         if field in value and not check(value[field]):
             return False
@@ -114,6 +121,9 @@ def valid_entry(section, entry, value, now):
     if section == "mines":
         # Die ID muss zum Eintrag passen, sonst könnte man fremde Minen überschreiben
         return value.get("id") == entry and isinstance(value.get("name"), str)
+    if section == "members":
+        # Nur gültige Minecraft-Namen, und der Name muss zum Eintrag passen
+        return value.get("name") == entry and bool(MEMBER_NAME.match(entry))
     ready = value.get("readyAt", 0)
     return ready == 0 or ready <= now + MAX_TIMER_MS
 

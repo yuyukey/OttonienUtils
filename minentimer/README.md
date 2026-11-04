@@ -87,7 +87,8 @@ Geteilt werden die Minen **mit Lehen** und ihre Timer. Minen ohne Lehen bleiben 
 **Lehen-Codes:** Jedes Lehen hat einen eigenen, zufälligen Code wie `K7QX-M2PA-9TZD`. Du findest ihn unter **Numpad 3 → Einstellungen → Mit anderen teilen…**, dort gibt es auch den Knopf **Kopieren**. Gib den Code eines Lehens allen, die dort Rechte haben, auch wenn sie sonst in einer anderen Gruppe sind. Sie tragen ihn im selben Fenster unten ein, dann taucht das Lehen mit seinen Minen und Timern bei ihnen auf. Deine anderen Lehen sehen sie nicht.
 
 - **Neu:** Gibt einem Lehen einen neuen Code, z. B. wenn der alte bei den Falschen gelandet ist. Wer nur den alten Code hat, sieht das Lehen danach nicht mehr. Gib den neuen allen, die weiter mitmachen sollen.
-- **✕:** Verlässt ein Lehen. Seine Minen verschwinden nur bei dir.
+- **Mitglieder:** Fährst du im Teilen-Fenster mit der Maus über ein Lehen, siehst du, wer den Code benutzt und wann zuletzt. Die Zahl in Klammern zeigt, wie viele es sind. Die Namen meldet jede Mod selbst. Für normale Spieler stimmt das, eine umgebaute Mod könnte sich aber verstecken. Wer 30 Tage nicht da war, fällt aus der Liste.
+- **✕:** Verlässt ein Lehen. Seine Minen verschwinden nur bei dir, und du verschwindest aus der Mitgliederliste.
 - **Server …:** Hier lässt sich eine andere Server-Adresse eintragen. Lässt du sie leer, nutzt die Mod wieder den eingebauten Server. Statt des eigenen Servers funktioniert auch eine Firebase Realtime Database.
 
 Wer vor Version 1.7.0 einen gemeinsamen Gruppen-Code hatte, bekommt nach dem Update automatisch dieselben Lehen-Codes wie die anderen aus der Gruppe.
@@ -96,7 +97,7 @@ Wer vor Version 1.7.0 einen gemeinsamen Gruppen-Code hatte, bekommt nach dem Upd
 
 ## Datenschutz
 
-Beim Teilen gehen an den Server: die Minen und Timer deiner Lehen und dein **Minecraft-Name** bei Timern, die du startest („markiert von …“). Wie bei jeder Internetverbindung sieht der Server außerdem deine IP-Adresse. Sonst sendet die Mod nichts, also keine Chat-Nachrichten, keine Dateien und keine Daten über deinen PC. Wer nicht teilen will, schaltet es unter **Numpad 3 → Einstellungen → Mit anderen teilen…** aus.
+Beim Teilen gehen an den Server: die Minen und Timer deiner Lehen und dein **Minecraft-Name**, und zwar bei Timern, die du startest („markiert von …“), und für die Mitgliederliste jedes Lehens, dessen Code du benutzt. Den Namen sehen alle, die denselben Lehen-Code haben. Wie bei jeder Internetverbindung sieht der Server außerdem deine IP-Adresse. Sonst sendet die Mod nichts, also keine Chat-Nachrichten, keine Dateien und keine Daten über deinen PC. Wer nicht teilen will, schaltet es unter **Numpad 3 → Einstellungen → Mit anderen teilen…** aus.
 
 ## Selbst bauen
 

@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /** Einstellungen zum Teilen: ein Code je Lehen. Minen ohne Lehen bleiben bei einem selbst. */
@@ -171,6 +172,31 @@ public class SyncScreen extends Screen {
 		return false;
 	}
 
+	private static List<Component> memberTooltip(List<SyncManager.Member> members) {
+		List<Component> tip = new ArrayList<>();
+		tip.add(Component.literal("Mitglieder – wer diesen Code benutzt:"));
+		if (members.isEmpty()) tip.add(Component.literal("noch niemand gemeldet").withStyle(s -> s.withColor(0xAAAAAA)));
+		long now = System.currentTimeMillis();
+		for (int i = 0; i < Math.min(members.size(), 15); i++) {
+			SyncManager.Member m = members.get(i);
+			tip.add(Component.literal(m.name + " – " + ago(now - m.updatedAt)).withStyle(s -> s.withColor(0x55FFFF)));
+		}
+		if (members.size() > 15) tip.add(Component.literal("… und " + (members.size() - 15) + " weitere"));
+		tip.add(Component.literal("Die Namen meldet jede Mod selbst.").withStyle(s -> s.withColor(0xAAAAAA)));
+		return tip;
+	}
+
+	/** „gerade aktiv“, „vor 3 Std.“, „vor 2 Tagen“ */
+	private static String ago(long ms) {
+		long min = ms / 60_000L;
+		if (min < 11) return "gerade aktiv";
+		if (min < 60) return "vor " + min + " Min.";
+		long h = min / 60;
+		if (h < 24) return "vor " + h + " Std.";
+		long d = h / 24;
+		return d == 1 ? "vor 1 Tag" : "vor " + d + " Tagen";
+	}
+
 	@Override
 	public void render(GuiGraphics g, int mouseX, int mouseY, float delta) {
 		super.render(g, mouseX, mouseY, delta);
@@ -190,9 +216,14 @@ public class SyncScreen extends Screen {
 		for (int i = page * rowsShown; i < Math.min(rows.size(), (page + 1) * rowsShown); i++) {
 			Row row = rows.get(i);
 			int color = row.pending() ? 0xFFAAAAAA : 0xFF55FFFF;
-			String label = font.plainSubstrByWidth(row.label(), 98);
+			List<SyncManager.Member> members = row.pending() ? List.of() : SyncManager.get().members(row.code());
+			String count = members.isEmpty() ? "" : " (" + members.size() + ")";
+			String label = font.plainSubstrByWidth(row.label(), 98 - font.width(count)) + count;
 			g.drawString(font, label, left, ry + 6, color, false);
 			g.drawString(font, font.plainSubstrByWidth(row.code(), 86), left + 102, ry + 6, 0xFFFFDD55, false);
+			if (!row.pending() && mouseX >= left && mouseX < left + 190 && mouseY >= ry && mouseY < ry + 20) {
+				g.setTooltipForNextFrame(font, memberTooltip(members), Optional.empty(), mouseX, mouseY);
+			}
 			ry += ROW_H;
 		}
 

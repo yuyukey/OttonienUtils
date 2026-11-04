@@ -380,6 +380,11 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 					throw new AssertionError("Lehen-Code nicht zugeordnet: " + fremd.area + " " + cfg.lehenCodes + " " + cfg.joinCodes);
 				}
 				if (mgr.timer(fremd) == null || !"Andere".equals(mgr.timer(fremd).by)) throw new AssertionError("Timer der anderen Gruppe fehlt");
+				// Mitgliederliste: die andere Gruppe und man selbst
+				var names = SyncManager.get().members("LEHN-TEST-0001").stream().map(x -> x.name).toList();
+				if (!names.contains("Andere") || !names.contains(MineManager.playerName()) || names.contains("Weg")) {
+					throw new AssertionError("Mitglieder: " + names);
+				}
 				Mine eisenmine = mgr.mines().stream().filter(x -> x.id.equals("eisenmine")).findFirst().orElseThrow();
 				if (!eisenmine.area.isEmpty() || !"Eisenmine".equals(eisenmine.name)) throw new AssertionError("Lehen-Code hat eine eigene Mine übernommen");
 				mgr.start(fremd);
@@ -393,6 +398,22 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 			if (!lehen.contains("kohle_vorkommen_1") || lehen.contains("meine_kohlemine_") || lehen.contains("Sturmh") || !lehen.contains("Player")) {
 				throw new AssertionError("Lehen-Code auf dem Server falsch: " + lehen);
 			}
+			var lehenMembers = com.google.gson.JsonParser.parseString(lehen).getAsJsonObject().getAsJsonObject("members");
+			if (lehenMembers == null || lehenMembers.keySet().stream().noneMatch(k -> k.startsWith("Player"))) throw new AssertionError("Eigener Name nicht gemeldet: " + lehen);
+			// Der Server nimmt keine Mitglieder unter fremdem Namen an
+			try {
+				java.net.http.HttpClient.newHttpClient().send(
+						java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:8765/minentimer/LEHN-TEST-0001.json"))
+								.header("X-MinenTimer-Key", de.minentimer.BuiltInSync.KEY)
+								.method("PATCH", java.net.http.HttpRequest.BodyPublishers.ofString(
+										"{\"members/Echt\":{\"name\":\"Falsch\",\"updatedAt\":1},\"members/a b\":{\"name\":\"a b\",\"updatedAt\":1}}"))
+								.build(),
+						java.net.http.HttpResponse.BodyHandlers.discarding());
+			} catch (Exception e) {
+				throw new AssertionError("Mock-Server nicht erreichbar", e);
+			}
+			String afterBad = fetch("LEHN-TEST-0001");
+			if (afterBad.contains("Falsch") || afterBad.contains("a b")) throw new AssertionError("Server hat falsches Mitglied gespeichert: " + afterBad);
 			if (own.contains("kohle_vorkommen_1")) throw new AssertionError("Mine ohne Lehen im eigenen Code: " + own);
 
 			// Lehen-Code ändern: alles zieht um, beim alten Code verschwinden die Minen
@@ -412,6 +433,7 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 			ctx.runOnClient(mc -> {
 				MineManager mgr = MineManager.get();
 				ModConfig cfg = ModConfig.get();
+				fresh[0] = ModConfig.get().mappedCode("Grenzmark");
 				mgr.leaveLehen("Grenzmark");
 				if (mgr.mines().stream().anyMatch(x -> "Grenzmark".equals(x.area)) || cfg.mappedCode("Grenzmark") != null) {
 					throw new AssertionError("Lehen nicht verlassen");
@@ -422,6 +444,10 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 			ctx.runOnClient(mc -> {
 				if (MineManager.get().mines().stream().anyMatch(x -> "Grenzmark".equals(x.area))) throw new AssertionError("Verlassenes Lehen ist zurück");
 			});
+			var leftMembers = com.google.gson.JsonParser.parseString(fetch(fresh[0])).getAsJsonObject().getAsJsonObject("members");
+			if (leftMembers == null || leftMembers.entrySet().stream().noneMatch(e -> e.getKey().startsWith("Player") && e.getValue().getAsJsonObject().get("left").getAsBoolean())) {
+				throw new AssertionError("Beim Verlassen nicht ausgetragen: " + leftMembers);
+			}
 			ctx.runOnClient(mc -> {
 				if (!"Verbunden".equals(SyncManager.get().status())) throw new AssertionError("Sync-Status nach Upload: " + SyncManager.get().status());
 			});
