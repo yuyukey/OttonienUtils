@@ -338,8 +338,8 @@ public final class MineManager {
 		notified.clear();
 		Path dir = ModConfig.dir();
 		Map<String, Mine> loadedMines = read(dir.resolve("mines.json"), MINES_TYPE);
+		// Beim ersten Start ist die Liste leer: Jeder trägt seine eigenen Minen ein.
 		if (loadedMines == null) {
-			for (Mine m : DefaultMines.create()) mines.put(m.id, m);
 			saveMines();
 		} else {
 			for (Mine m : loadedMines.values()) {

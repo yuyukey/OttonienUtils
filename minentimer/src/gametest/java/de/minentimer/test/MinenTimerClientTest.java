@@ -27,6 +27,8 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 
 			ctx.runOnClient(mc -> {
 				MineManager mgr = MineManager.get();
+				if (!mgr.mines().isEmpty()) throw new AssertionError("Neue Installation sollte keine Minen haben: " + mgr.mines().size());
+				for (Mine mine : TestMines.create()) mgr.saveMine(mine);
 				// Eine eigene große Kohlemine direkt am Spieler
 				Mine m = mgr.createMine("Meine Kohlemine", mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
 				m.size = MineSize.MINE;

@@ -1,10 +1,14 @@
-package de.minentimer;
+package de.minentimer.test;
+
+import de.minentimer.Mine;
+import de.minentimer.MineSize;
+import de.minentimer.ResourceType;
 
 import java.util.List;
 
-/** Die Minen, die beim ersten Start angelegt werden. */
-final class DefaultMines {
-	private DefaultMines() {
+/** Minen, die der Test zu Beginn anlegt (früher die Beispiel-Minen der Mod). */
+final class TestMines {
+	private TestMines() {
 	}
 
 	static List<Mine> create() {

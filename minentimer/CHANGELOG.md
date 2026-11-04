@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.1
+
+- **Neues Overlay-Design** passend zur Aktivitäten-Mod: dunkle Fläche mit feinem goldenem Rahmen, Titel mit Anzahl bereiter Minen und Trennlinie. Bereite Minen sind grün hinterlegt und haben einen pulsierenden Punkt.
+- Das Minen-Overlay verschwindet, solange der Chat offen ist.
+- **Keine Beispiel-Minen mehr:** Eine neue Installation startet mit leerer Liste, du trägst deine eigenen Minen mit „+ Mine hier“ ein. Wer die Mod schon hat, behält seine Liste, auch übrig gebliebene Beispiel-Minen. Die kannst du in der Liste löschen.
+
 ## 1.8.0
 
 - **Mitgliederliste:** Fährst du im Teilen-Fenster mit der Maus über ein Lehen, siehst du, wer dessen Code benutzt und wann zuletzt, z. B. „Kamerad – vor 3 Std.“. Die Zahl hinter dem Lehen zeigt, wie viele es sind.
