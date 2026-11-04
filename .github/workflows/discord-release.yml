@@ -1,0 +1,43 @@
+# Kündigt jedes neue Release im Discord-Channel an.
+# Braucht das Repository-Geheimnis DISCORD_WEBHOOK (Webhook-Adresse des Channels).
+name: Discord-Ankündigung
+
+on:
+  release:
+    types: [published]
+  # Zum Nachholen oder Testen: von Hand starten, ohne Tag wird das neueste Release gesendet
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release-Tag, z. B. minentimer-v1.6.0 (leer = neuestes)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release an Discord senden
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "::error::Das Geheimnis DISCORD_WEBHOOK fehlt (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          gh release view $TAG --repo "$GITHUB_REPOSITORY" --json name,body,url > release.json
+          # Discord erlaubt höchstens 4096 Zeichen pro Beschreibung
+          jq '{
+            username: "OttonienUtils",
+            embeds: [{
+              title: ("📦 " + .name + " ist da"),
+              url: .url,
+              color: 14524637,
+              description: ((.body | if length > 3800 then .[0:3800] + "\n…" else . end) + "\n\n**[⬇️ Download & alle Details](" + .url + ")**")
+            }]
+          }' release.json > message.json
+          curl --fail-with-body -sS -H "Content-Type: application/json" -d @message.json "$WEBHOOK"
