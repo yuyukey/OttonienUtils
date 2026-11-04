@@ -100,6 +100,7 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				eisen.type = ResourceType.EISEN;
 				mgr.saveMine(eisen);
 				var iron = net.minecraft.world.level.block.Blocks.IRON_ORE.defaultBlockState();
+				if (!new ModConfig().autoMark) throw new AssertionError("Auto-Markieren ist nicht standardmäßig an");
 				cfg.autoMark = false;
 				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Auto-Markieren lief, obwohl aus");
 				cfg.autoMark = true;
