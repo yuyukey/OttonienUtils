@@ -20,6 +20,9 @@ public final class Config {
 	public boolean overlayEnabled = true;
 	/** Anzeige des aktuellen Lehens oben am Bildschirm. */
 	public boolean hudEnabled = true;
+	/** Lage der Anzeige: Mitte als Anteil der Bildschirmbreite, Höhe als Anteil des freien Platzes (0 = oben). */
+	public double hudX = 0.5;
+	public double hudY = 0;
 	/** Nur auf Servern mit „ottonien“ in der Adresse anzeigen. Für Tests im Einzelspieler auf false setzen. */
 	public boolean onlyOnOttonien = true;
 	/** Verschiebung aller Grenzen in Blöcken, zum Feinjustieren (/lehenskarte verschieben). */

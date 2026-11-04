@@ -7,7 +7,7 @@ Zeigt die Lehen von Ottonien direkt in **Xaero's World Map** und **Xaero's Minim
 - Freie Lehen hellgrau, gesperrte Lehen dunkelgrau, beide mit dem leeren Wappen „kein Wappen“
 - Banner der Gefolge in der World Map, live aus dem Ottonien-Ressourcenpaket
 - Beim Überfahren erscheint der Name des Lehens. Ein Linksklick wählt das Lehen aus und zeigt ein Infofeld mit Gefolge, Rang, Anführer, Mitgliedern, Lehnsherr, Vasallen und Beschreibung. Ein Klick auf das Infofeld oder ein zweiter Klick schließt es.
-- Oben in der Mitte steht, in welchem Lehen man gerade ist
+- Oben in der Mitte steht, in welchem Lehen man gerade ist; die Anzeige lässt sich in den Einstellungen mit der Maus verschieben
 - Beim Rauszoomen werden Lehen zusammengefasst: erst Freiherrschaften o. Ä. mit ihren Vasallen, dann ganze Machtbereiche, jeweils mit einem Wappen (`"groupOnZoomOut"`)
 - Wappen und Namen wachsen mit dem Zoom und blenden zwischen den Stufen weich über; Namen haben einen dunklen Rand
 - Größe der Wappen auf der Karte einstellbar (50–200 %, `"bannerScale"`)

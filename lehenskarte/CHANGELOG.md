@@ -1,5 +1,9 @@
 # Changelog – Lehenskarte
 
+## 0.1.2
+
+- Die Anzeige oben lässt sich verschieben: in den Einstellungen „Anzeige oben verschieben…“ und mit der Maus an die gewünschte Stelle ziehen (`"hudX"`/`"hudY"`)
+
 ## 0.1.1
 
 - Anzeige oben: Der Name des Gefolges steht jetzt in der ersten Zeile, darunter Lehen und Rang

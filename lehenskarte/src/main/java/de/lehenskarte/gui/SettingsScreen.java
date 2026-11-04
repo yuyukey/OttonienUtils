@@ -46,6 +46,8 @@ public class SettingsScreen extends Screen {
 		toggle(right, y, w, h, "Nur auf Ottonien", c.onlyOnOttonien, v -> c.onlyOnOttonien = v);
 		y += h + gap;
 		toggle(left, y, w, h, "NPC-Dörfer", c.npcVillages, v -> c.npcVillages = v);
+		addRenderableWidget(Button.builder(Component.literal("Anzeige oben verschieben…"), b -> minecraft.setScreen(new HudPositionScreen(this)))
+				.bounds(right, y, w, h).build());
 
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, b -> onClose())
 				.bounds(width / 2 - 100, height - 28, 200, 20).build());

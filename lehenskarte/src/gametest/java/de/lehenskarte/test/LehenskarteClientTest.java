@@ -147,6 +147,22 @@ public class LehenskarteClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("lehenskarte-einstellungen");
 			ctx.getInput().pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE);
 			ctx.waitTicks(20);
+
+			// Anzeige verschieben: unten links ablegen, im Spiel prüfen, wieder zurücksetzen
+			ctx.runOnClient(mc -> {
+				de.lehenskarte.Config.get().hudX = 0.15;
+				de.lehenskarte.Config.get().hudY = 1;
+				mc.setScreen(new de.lehenskarte.gui.HudPositionScreen(null));
+			});
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("lehenskarte-hud-verschieben");
+			ctx.runOnClient(mc -> mc.setScreen(null));
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("lehenskarte-hud-verschoben");
+			ctx.runOnClient(mc -> {
+				de.lehenskarte.Config.get().hudX = 0.5;
+				de.lehenskarte.Config.get().hudY = 0;
+			});
 		}
 	}
 
