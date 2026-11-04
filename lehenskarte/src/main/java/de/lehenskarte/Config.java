@@ -30,6 +30,8 @@ public final class Config {
 	public int borderOpacity = 70;
 	/** Banner in der World Map zeigen. */
 	public boolean bannersOnMap = true;
+	/** Größe der Wappen auf der Karte in Prozent (50–200). */
+	public int bannerScale = 100;
 	/** Beim Rauszoomen Lehen zusammenfassen: erst Freiherrschaften mit Vasallen, dann ganze Machtbereiche. */
 	public boolean groupOnZoomOut = true;
 	/** In unerkundeten (schwarzen) Bereichen der World Map die gemalte Karte von karte.ottonien.com zeigen. */

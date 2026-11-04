@@ -186,10 +186,11 @@ public final class MapOverlay {
 		return t * t * (3 - 2 * t);
 	}
 
-	/** Wappengröße je Stufe: wächst mit dem Zoom, zusammengefasste Bereiche etwas größer. */
+	/** Wappengröße je Stufe: wächst mit dem Zoom, zusammengefasste Bereiche etwas größer, mal der eingestellten Größe. */
 	private static int bannerSize(int stage, double lehenPx) {
 		double f = stage == 0 ? 0.38 : stage == 1 ? 0.95 : 1.6;
-		return (int) Math.round(Math.max(12, Math.min(30, lehenPx * f)));
+		double scale = Math.max(50, Math.min(200, Config.get().bannerScale)) / 100.0;
+		return (int) Math.round(Math.max(12, Math.min(30, lehenPx * f)) * scale);
 	}
 
 	private static void drawBanners(GuiGraphics g, Font font, LehenGeometry geo, OttonienData.Snapshot data, LehenGroups groups,

@@ -1,5 +1,10 @@
 # Changelog – Lehenskarte
 
+## 0.1.1
+
+- Anzeige oben: Der Name des Gefolges steht jetzt in der ersten Zeile, darunter Lehen und Rang
+- Neue Einstellung „Wappengröße“ (50–200 %), um die Wappen auf der Karte größer oder kleiner zu machen
+
 ## 0.1.0
 
 Erste Version.

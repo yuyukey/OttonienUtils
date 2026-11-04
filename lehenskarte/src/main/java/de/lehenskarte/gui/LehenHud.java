@@ -34,8 +34,9 @@ public final class LehenHud {
 		OttonienData.Region r = data.region(s.id());
 		OttonienData.Faction f = data.owner(s.id());
 		String lehen = r != null ? r.name() : s.id();
-		String line1 = lehen;
-		String line2 = f != null ? f.name() + " · " + f.rank() : (r != null && !r.enabled() ? "gesperrt" : "frei");
+		// Das Gefolge ist wichtiger als der Name des Lehens: oben das Gefolge, darunter Lehen und Rang
+		String line1 = f != null ? f.name() : lehen;
+		String line2 = f != null ? lehen + " · " + f.rank() : (r != null && !r.enabled() ? "gesperrt" : "frei");
 
 		Font font = mc.font;
 		Identifier tex = f != null ? Banners.texture(f.banner()) : null;

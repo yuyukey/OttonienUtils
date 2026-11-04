@@ -10,6 +10,7 @@ Zeigt die Lehen von Ottonien direkt in **Xaero's World Map** und **Xaero's Minim
 - Oben in der Mitte steht, in welchem Lehen man gerade ist
 - Beim Rauszoomen werden Lehen zusammengefasst: erst Freiherrschaften o. Ä. mit ihren Vasallen, dann ganze Machtbereiche, jeweils mit einem Wappen (`"groupOnZoomOut"`)
 - Wappen und Namen wachsen mit dem Zoom und blenden zwischen den Stufen weich über; Namen haben einen dunklen Rand
+- Größe der Wappen auf der Karte einstellbar (50–200 %, `"bannerScale"`)
 - Grenzen zwischen Machtbereichen mit einem Farbstreifen, der nach innen ausläuft
 - Im Infofeld eines Lehens auch Bergbau und Bonus
 - Meldung im Chat, wenn ein Lehen den Besitzer wechselt, frei wird oder ein Gefolge den Lehnsherrn wechselt (`"notifyChanges"`)

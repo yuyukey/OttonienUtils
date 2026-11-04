@@ -37,13 +37,15 @@ public class SettingsScreen extends Screen {
 		slider(right, y, w, h, "Grenzen", 0, 100, c.borderOpacity, v -> c.borderOpacity = v);
 		y += h + gap;
 		toggle(left, y, w, h, "Wappen auf der Karte", c.bannersOnMap, v -> c.bannersOnMap = v);
-		toggle(right, y, w, h, "Zusammenfassen", c.groupOnZoomOut, v -> c.groupOnZoomOut = v);
+		slider(right, y, w, h, "Wappengröße", 50, 200, c.bannerScale, v -> c.bannerScale = v);
 		y += h + gap;
-		toggle(left, y, w, h, "Gemalte Karte", c.paintedMap, v -> c.paintedMap = v);
-		toggle(right, y, w, h, "Chat-Meldungen", c.notifyChanges, v -> c.notifyChanges = v);
+		toggle(left, y, w, h, "Zusammenfassen", c.groupOnZoomOut, v -> c.groupOnZoomOut = v);
+		toggle(right, y, w, h, "Gemalte Karte", c.paintedMap, v -> c.paintedMap = v);
 		y += h + gap;
-		toggle(left, y, w, h, "Nur auf Ottonien", c.onlyOnOttonien, v -> c.onlyOnOttonien = v);
-		toggle(right, y, w, h, "NPC-Dörfer", c.npcVillages, v -> c.npcVillages = v);
+		toggle(left, y, w, h, "Chat-Meldungen", c.notifyChanges, v -> c.notifyChanges = v);
+		toggle(right, y, w, h, "Nur auf Ottonien", c.onlyOnOttonien, v -> c.onlyOnOttonien = v);
+		y += h + gap;
+		toggle(left, y, w, h, "NPC-Dörfer", c.npcVillages, v -> c.npcVillages = v);
 
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, b -> onClose())
 				.bounds(width / 2 - 100, height - 28, 200, 20).build());
