@@ -2,6 +2,8 @@ package de.minentimer;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /** Rohstoffarten mit ihren Respawn-Zeiten (Vorkommen / Mine). */
 public enum ResourceType {
 	EISEN("Eisenerz", 0xFFD8AF93, 120, 240),
@@ -26,5 +28,16 @@ public enum ResourceType {
 
 	public int minutes(MineSize size) {
 		return size == MineSize.MINE ? mineMinutes : vorkommenMinutes;
+	}
+
+	/** Blöcke, deren Abbau beim Auto-Markieren als diese Rohstoffart zählt. In config.json änderbar. */
+	public List<String> defaultBlocks() {
+		return switch (this) {
+			case EISEN -> List.of("minecraft:iron_ore", "minecraft:deepslate_iron_ore");
+			case KOHLE -> List.of("minecraft:coal_ore", "minecraft:deepslate_coal_ore");
+			case SALZ -> List.of("minecraft:lapis_ore", "minecraft:deepslate_lapis_ore", "minecraft:copper_ore", "minecraft:deepslate_copper_ore");
+			case TORF -> List.of("minecraft:mud", "minecraft:muddy_mangrove_roots");
+			case TON -> List.of("minecraft:clay");
+		};
 	}
 }

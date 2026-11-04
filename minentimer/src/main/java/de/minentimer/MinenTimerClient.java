@@ -5,13 +5,17 @@ import de.minentimer.gui.HudOverlay;
 import de.minentimer.gui.MineListScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.event.client.player.ClientPlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.state.BlockState;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +48,7 @@ public class MinenTimerClient implements ClientModInitializer {
 
 		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(MOD_ID, "overlay"), HudOverlay::render);
 		ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
+		ClientPlayerBlockBreakEvents.AFTER.register((level, player, pos, state) -> autoMark(Minecraft.getInstance(), pos, state));
 	}
 
 	private void onTick(Minecraft mc) {
@@ -98,6 +103,35 @@ public class MinenTimerClient implements ClientModInitializer {
 		String area = mgr.cycleArea(dir);
 		int count = mgr.visibleMines(ModConfig.SortMode.LIST).size();
 		actionBar(mc, Component.literal("Lehen: " + MineManager.areaLabel(area) + " (" + count + (count == 1 ? " Mine)" : " Minen)")).withStyle(ChatFormatting.GOLD));
+	}
+
+	/**
+	 * Auto-Markieren: Wer in der Nähe einer Mine deren Rohstoff abbaut, startet ihren Timer.
+	 * Liefert true, wenn ein Timer gestartet wurde.
+	 */
+	public static boolean autoMark(Minecraft mc, BlockPos pos, BlockState state) {
+		ModConfig cfg = ModConfig.get();
+		if (!cfg.autoMark) return false;
+		ResourceType type = resourceOf(cfg, state);
+		if (type == null) return false;
+		MineManager mgr = MineManager.get();
+		Mine mine = mgr.nearestOfType(type, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, cfg.quickMarkRadius);
+		if (mine == null || mgr.isRunning(mine, System.currentTimeMillis())) return false;
+		mgr.start(mine);
+		actionBar(mc, Component.literal("⛏ " + mine.name + " automatisch markiert – bereit um " + TimeFormat.clock(mgr.timer(mine).readyAt)).withStyle(ChatFormatting.GREEN));
+		if (cfg.soundEnabled) Sounds.click();
+		return true;
+	}
+
+	private static ResourceType resourceOf(ModConfig cfg, BlockState state) {
+		String id = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+		String path = id.substring(id.indexOf(':') + 1);
+		for (var e : cfg.autoMarkBlocks.entrySet()) {
+			for (String b : e.getValue()) {
+				if (b.equals(id) || b.equals(path)) return e.getKey();
+			}
+		}
+		return null;
 	}
 
 	private static void actionBar(Minecraft mc, Component message) {

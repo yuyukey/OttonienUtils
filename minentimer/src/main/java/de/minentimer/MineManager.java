@@ -180,6 +180,21 @@ public final class MineManager {
 		return best;
 	}
 
+	/** Nächste Mine dieser Rohstoffart im Umkreis, sonst null. */
+	public Mine nearestOfType(ResourceType type, double px, double py, double pz, double radius) {
+		Mine best = null;
+		double bestDist = radius;
+		for (Mine m : mines()) {
+			if (m.type != type) continue;
+			double d = m.distanceTo(px, py, pz);
+			if (d <= bestDist) {
+				best = m;
+				bestDist = d;
+			}
+		}
+		return best;
+	}
+
 	// ---------- Timer ändern ----------
 
 	public void start(Mine mine) {

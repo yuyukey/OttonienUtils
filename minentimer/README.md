@@ -48,6 +48,18 @@ Alle Tasten lassen sich unter **Optionen → Steuerung → Tastenbelegung → Mi
 
 **Lehen-Gruppen:** Trag beim Bearbeiten einer Mine im Feld **Lehen** einen Namen ein (z. B. *Sturmhöhe*). Mit „Vorhandenes Lehen ▸“ übernimmst du einen schon benutzten Namen. Alle Minen mit demselben Namen bilden eine Gruppe, die du mit den Pfeiltasten durchschaltest. Die Markier-Taste (#) findet weiterhin die nächste Mine aus allen Lehen, und Bereit-Meldungen kommen auch für alle.
 
+**Auto-Markieren** (Einstellungen, standardmäßig aus): Baust du in der Nähe einer Mine ihren Rohstoff ab, startet ihr Timer von selbst. Es zählt der Markier-Radius. Diese Blöcke zählen:
+
+| Rohstoff | Blöcke |
+|---|---|
+| Eisenerz | Eisenerz, Tiefenschiefer-Eisenerz |
+| Steinkohle | Steinkohle, Tiefenschiefer-Steinkohle |
+| Salz | Lapislazulierz, Kupfererz (auch Tiefenschiefer) |
+| Torf | Schlamm, schlammige Mangrovenwurzeln |
+| Ton | Ton |
+
+Passt etwas davon auf Ottonien nicht, kannst du die Liste in `config/minentimer/config.json` unter `autoMarkBlocks` ändern, mit Block-IDs wie `minecraft:iron_ore`.
+
 ## Respawn-Zeiten
 
 | Rohstoff | Vorkommen (klein) | Mine (groß) |

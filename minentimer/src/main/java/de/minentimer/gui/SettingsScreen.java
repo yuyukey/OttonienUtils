@@ -6,6 +6,7 @@ import de.minentimer.SyncManager;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -60,6 +61,11 @@ public class SettingsScreen extends Screen {
 		addRenderableWidget(CycleButton.onOffBuilder(cfg.chatMessage)
 				.create(left, y, cw, 20, Component.literal("Chat-Meldung"), (b, v) -> cfg.chatMessage = v));
 		addRenderableWidget(new IntSlider(right, y, cw, 5, 200, 5, cfg.quickMarkRadius, v -> "Markier-Radius: " + v, v -> cfg.quickMarkRadius = v));
+		y += 24;
+		CycleButton<Boolean> autoMark = CycleButton.onOffBuilder(cfg.autoMark)
+				.create(left, y, cw, 20, Component.literal("Auto-Markieren"), (b, v) -> cfg.autoMark = v);
+		autoMark.setTooltip(Tooltip.create(Component.literal("Baust du in der Nähe einer Mine ihren Rohstoff ab (z. B. Eisenerz an einer Eisenmine), startet ihr Timer von selbst. Gilt im Markier-Radius.")));
+		addRenderableWidget(autoMark);
 
 		int by = Math.max(y + 28, height - 26);
 		addRenderableWidget(Button.builder(Component.literal("Mit anderen teilen…"), b -> {

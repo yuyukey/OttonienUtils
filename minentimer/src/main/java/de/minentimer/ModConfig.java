@@ -11,7 +11,9 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModConfig {
 	public enum OverlayMode {
@@ -74,6 +76,10 @@ public class ModConfig {
 	public boolean chatMessage = true;
 
 	public int quickMarkRadius = 40;
+	/** Timer automatisch starten, wenn man in der Nähe einer Mine ihren Rohstoff abbaut. */
+	public boolean autoMark = false;
+	/** Welche Blöcke beim Auto-Markieren zu welcher Rohstoffart gehören. Fehlende Arten bekommen die Standardblöcke. */
+	public Map<ResourceType, List<String>> autoMarkBlocks = new EnumMap<>(ResourceType.class);
 	public SortMode sortMode = SortMode.LIST;
 	/** Eigene Reihenfolge der Minen (IDs), nur lokal. Neue Minen stehen hinten. */
 	public List<String> mineOrder = new ArrayList<>();
@@ -125,6 +131,15 @@ public class ModConfig {
 		if (sortMode == null) sortMode = SortMode.LIST;
 		if (mineOrder == null) mineOrder = new ArrayList<>();
 		if (activeArea == null) activeArea = "";
+		Map<ResourceType, List<String>> blocks = new EnumMap<>(ResourceType.class);
+		if (autoMarkBlocks != null) {
+			// Unbekannte Rohstoffarten aus der Datei kommen als null an
+			autoMarkBlocks.forEach((t, list) -> {
+				if (t != null && list != null) blocks.put(t, new ArrayList<>(list));
+			});
+		}
+		for (ResourceType t : ResourceType.values()) blocks.computeIfAbsent(t, k -> new ArrayList<>(k.defaultBlocks()));
+		autoMarkBlocks = blocks;
 		if (syncUrl == null) syncUrl = "";
 		if (syncGroup == null) syncGroup = "";
 		if (syncKey == null) syncKey = "";

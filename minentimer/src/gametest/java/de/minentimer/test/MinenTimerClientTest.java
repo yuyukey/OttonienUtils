@@ -91,6 +91,37 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				keep.useBuiltInSync();
 				if (!"Bambus".equals(keep.syncGroup)) throw new AssertionError("Standard-Server hat den Gruppen-Code verloren");
 			});
+			// Auto-Markieren: Abbau des passenden Rohstoffs nahe einer Mine startet ihren Timer
+			ctx.runOnClient(mc -> {
+				MineManager mgr = MineManager.get();
+				ModConfig cfg = ModConfig.get();
+				var pos = mc.player.blockPosition();
+				Mine eisen = mgr.createMine("Auto-Eisen", pos.getX(), pos.getY(), pos.getZ());
+				eisen.type = ResourceType.EISEN;
+				mgr.saveMine(eisen);
+				var iron = net.minecraft.world.level.block.Blocks.IRON_ORE.defaultBlockState();
+				cfg.autoMark = false;
+				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Auto-Markieren lief, obwohl aus");
+				cfg.autoMark = true;
+				if (MinenTimerClient.autoMark(mc, pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState())) throw new AssertionError("Stein hat markiert");
+				if (!MinenTimerClient.autoMark(mc, pos, iron) || !mgr.isRunning(eisen, System.currentTimeMillis())) throw new AssertionError("Eisenerz hat nicht markiert");
+				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Laufender Timer wurde neu gestartet");
+				if (MinenTimerClient.autoMark(mc, pos.offset(500, 0, 0), iron)) throw new AssertionError("Mine weit weg wurde markiert");
+				mgr.deleteMine(eisen);
+			});
+			// Echter Abbau im Spiel: Ton-Block neben dem Spieler abbauen
+			ctx.runOnClient(mc -> {
+				MineManager mgr = MineManager.get();
+				var pos = mc.player.blockPosition().offset(2, 0, 0);
+				Mine ton = mgr.createMine("Auto-Ton", pos.getX(), pos.getY(), pos.getZ());
+				ton.type = ResourceType.TON;
+				mgr.saveMine(ton);
+				mc.level.setBlock(pos, net.minecraft.world.level.block.Blocks.CLAY.defaultBlockState(), 3);
+				mc.gameMode.destroyBlock(pos);
+				if (!mgr.isRunning(ton, System.currentTimeMillis())) throw new AssertionError("Abbau im Spiel hat Ton nicht markiert");
+				mgr.deleteMine(ton);
+				ModConfig.get().autoMark = false;
+			});
 			// Standardtasten: # markieren, Numpad 3 Menü, Numpad 4 Overlay
 			if (MinenTimerClient.quickMarkKey.getDefaultKey().getValue() != org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSLASH
 					|| MinenTimerClient.openMenuKey.getDefaultKey().getValue() != org.lwjgl.glfw.GLFW.GLFW_KEY_KP_3
