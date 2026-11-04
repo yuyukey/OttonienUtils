@@ -107,7 +107,7 @@ public class MinenTimerClient implements ClientModInitializer {
 
 	/**
 	 * Auto-Markieren: Wer einen Rohstoff abbaut, startet den Timer der nächsten Mine dieser Art im Umkreis
-	 * von autoMarkMaxDistance (Standard 50 Blöcke). Dazu kommt die Abbauzeit.
+	 * von autoMarkMaxDistance (Standard 50 Blöcke).
 	 * Liefert true, wenn ein Timer gestartet wurde.
 	 */
 	public static boolean autoMark(Minecraft mc, BlockPos pos, BlockState state) {
@@ -117,9 +117,14 @@ public class MinenTimerClient implements ClientModInitializer {
 		if (type == null) return false;
 		MineManager mgr = MineManager.get();
 		Mine mine = mgr.nearestOfType(type, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, Math.max(1, cfg.autoMarkMaxDistance));
-		if (mine == null || mgr.isRunning(mine, System.currentTimeMillis())) return false;
-		mgr.start(mine, Math.max(0, cfg.autoMarkExtraMinutes) * 60_000L);
-		actionBar(mc, Component.literal("⛏ " + mine.name + " automatisch markiert – bereit um " + TimeFormat.clock(mgr.timer(mine).readyAt)).withStyle(ChatFormatting.GREEN));
+		if (mine == null) return false;
+		// Läuft der Timer noch länger, war das kein frisch gespawntes Erz. Kurz vor Ablauf war die Uhr nur etwas zu langsam.
+		long remaining = mgr.remainingMs(mine, System.currentTimeMillis());
+		boolean restart = remaining > 0;
+		if (restart && remaining > Math.max(0, cfg.autoMarkRestartMinutes) * 60_000L) return false;
+		mgr.start(mine);
+		String what = restart ? " neu gestartet (Erz war schon da)" : " automatisch markiert";
+		actionBar(mc, Component.literal("⛏ " + mine.name + what + " – bereit um " + TimeFormat.clock(mgr.timer(mine).readyAt)).withStyle(ChatFormatting.GREEN));
 		if (cfg.soundEnabled) Sounds.click();
 		return true;
 	}

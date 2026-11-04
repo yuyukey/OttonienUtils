@@ -107,10 +107,16 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				if (MinenTimerClient.autoMark(mc, pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState())) throw new AssertionError("Stein hat markiert");
 				long before = System.currentTimeMillis();
 				if (!MinenTimerClient.autoMark(mc, pos, iron) || !mgr.isRunning(eisen, System.currentTimeMillis())) throw new AssertionError("Eisenerz hat nicht markiert");
-				// Respawn-Zeit plus 3 Minuten Abbauzeit
-				long expected = before + (eisen.respawnMinutes() + 3) * 60_000L;
-				if (Math.abs(mgr.timer(eisen).readyAt - expected) > 5_000) throw new AssertionError("Abbauzeit nicht draufgerechnet: " + (mgr.timer(eisen).readyAt - before) / 60_000 + " Min");
+				// Normale Respawn-Zeit, ohne Zuschlag
+				long expected = before + eisen.respawnMinutes() * 60_000L;
+				if (Math.abs(mgr.timer(eisen).readyAt - expected) > 5_000) throw new AssertionError("Falsche Timer-Dauer: " + (mgr.timer(eisen).readyAt - before) / 60_000 + " Min");
 				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Laufender Timer wurde neu gestartet");
+				// Nur noch 9 Minuten übrig und das Erz ist schon da: Timer startet neu
+				mgr.adjust(eisen, -(mgr.remainingMs(eisen, System.currentTimeMillis()) - 9 * 60_000L));
+				if (!MinenTimerClient.autoMark(mc, pos, iron) || mgr.remainingMs(eisen, System.currentTimeMillis()) < 60 * 60_000L) throw new AssertionError("Timer kurz vor Ablauf wurde nicht neu gestartet");
+				// 11 Minuten übrig: bleibt
+				mgr.adjust(eisen, -(mgr.remainingMs(eisen, System.currentTimeMillis()) - 11 * 60_000L));
+				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Timer mit 11 Minuten Rest wurde neu gestartet");
 				mgr.deleteMine(eisen);
 				// Bis 50 Blöcke zählt die nächste Mine dieser Art (hier Eisen Vorkommen 2 bei 622/84/1423)
 				Mine fern = mgr.mines().stream().filter(m -> m.id.equals("eisen_vorkommen_2")).findFirst().orElseThrow();

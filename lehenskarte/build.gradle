@@ -1,0 +1,64 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap'
+}
+
+base {
+	archivesName = project.archives_base_name
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Xaero's Minimap / World Map nur zum Kompilieren. Die JARs liegen lokal in libs/ (nicht im Repository,
+	// Xaeros Lizenz erlaubt kein Weitergeben). Zur Laufzeit bringt der Spieler sie selbst mit.
+	def xaero = files(
+		"libs/xaeroworldmap-fabric-1.21.11-1.41.0.jar",
+		"libs/xaerominimap-fabric-1.21.11-26.1.0.jar",
+		"libs/xaerolib-fabric-1.21.11-1.1.15.jar"
+	)
+	modCompileOnly xaero
+	// Nur für runClient beim Entwickeln, landet nicht in der fertigen Mod
+	modLocalRuntime xaero
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+	it.options.encoding = "UTF-8"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = "lehenskarte-test"
+		enableGameTests = false
+		enableClientGameTests = true
+		eula = true
+	}
+}
+
+// Testlauf immer mit eingeschalteter Karte, auch ohne Ottonien-Server
+def gameTestConfigDir = file("build/run/clientGameTest/config")
+tasks.named("runClientGameTest") {
+	doFirst {
+		def dir = gameTestConfigDir
+		dir.mkdirs()
+		new File(dir, "lehenskarte.json").text = '{"overlayEnabled":true,"hudEnabled":true,"onlyOnOttonien":false,"fillOpacity":30,"borderOpacity":85}'
+	}
+}

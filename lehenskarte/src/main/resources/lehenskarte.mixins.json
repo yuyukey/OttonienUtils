@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "de.lehenskarte.mixin",
+	"plugin": "de.lehenskarte.mixin.XaeroMixinPlugin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"WorldMapHighlighterRegistryMixin",
+		"MinimapHighlighterRegistryMixin",
+		"GuiMapMixin"
+	],
+	"injectors": {
+		"defaultRequire": 0
+	}
+}

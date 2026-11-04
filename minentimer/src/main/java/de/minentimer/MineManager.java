@@ -198,15 +198,10 @@ public final class MineManager {
 	// ---------- Timer ändern ----------
 
 	public void start(Mine mine) {
-		start(mine, 0);
-	}
-
-	/** Startet den Timer mit zusätzlicher Zeit, z. B. für die Abbauzeit beim Auto-Markieren. */
-	public void start(Mine mine, long extraMs) {
 		long now = System.currentTimeMillis();
 		TimerEntry t = new TimerEntry();
 		t.startedAt = now;
-		t.readyAt = now + mine.respawnMinutes() * 60_000L + extraMs;
+		t.readyAt = now + mine.respawnMinutes() * 60_000L;
 		t.updatedAt = now;
 		t.by = playerName();
 		putTimer(mine.id, t);

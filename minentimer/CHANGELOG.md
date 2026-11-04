@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.1
+
+- **Auto-Markieren startet neu, wenn das Erz früher da ist:** Läuft der Timer einer Mine nur noch **höchstens 10 Minuten** und du baust dort schon wieder Erz ab, startet der Timer neu. Unten im Bild steht dann „neu gestartet (Erz war schon da)“. Bei mehr Restzeit bleibt der Timer wie bisher unberührt.
+- Die 10 Minuten stehen in `config/minentimer/config.json` unter `autoMarkRestartMinutes`.
+- **Kein 3-Minuten-Zuschlag mehr:** Auto-Markieren startet den Timer jetzt mit der normalen Respawn-Zeit, genau wie die #-Taste.
+
 ## 1.6.0
 
 - **Auto-Markieren:** Ist standardmäßig an und lässt sich unter Einstellungen → „Auto-Markieren“ ausschalten. Baust du einen Rohstoff ab, startet der Timer der nächsten Mine dieser Art von selbst, wenn sie höchstens 50 Blöcke entfernt ist. Erz, das du anderswo abbaust, löst nichts aus. Beispiele: Eisenerz startet die nächste Eisenmine, Kohle das nächste Kohlevorkommen. Andere Blöcke wie Stein lösen nichts aus, und ein laufender Timer wird nicht neu gestartet.

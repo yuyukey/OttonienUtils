@@ -78,10 +78,10 @@ public class ModConfig {
 	public int quickMarkRadius = 40;
 	/** Timer automatisch starten, wenn man in der Nähe einer Mine ihren Rohstoff abbaut. */
 	public boolean autoMark = true;
-	/** So viele Minuten kommen beim Auto-Markieren dazu, weil das Abbauen einer Mine etwa so lange dauert. */
-	public int autoMarkExtraMinutes = 3;
 	/** Nur Minen bis zu dieser Entfernung vom abgebauten Block zählen, damit Erz anderswo nichts auslöst. */
 	public int autoMarkMaxDistance = 50;
+	/** Läuft der Timer nur noch so viele Minuten, gilt Abbau als „Erz war schon wieder da“ und startet ihn neu. */
+	public int autoMarkRestartMinutes = 10;
 	/** Welche Blöcke beim Auto-Markieren zu welcher Rohstoffart gehören. Fehlende Arten bekommen die Standardblöcke. */
 	public Map<ResourceType, List<String>> autoMarkBlocks = new EnumMap<>(ResourceType.class);
 	public SortMode sortMode = SortMode.LIST;
