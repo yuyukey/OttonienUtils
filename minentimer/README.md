@@ -54,9 +54,9 @@ Alle Tasten lassen sich unter **Optionen → Steuerung → Tastenbelegung → Mi
 |---|---|
 | Eisenerz | Eisenerz, Tiefenschiefer-Eisenerz |
 | Steinkohle | Steinkohle, Tiefenschiefer-Steinkohle |
-| Salz | Lapislazulierz, Kupfererz (auch Tiefenschiefer) |
-| Torf | Schlamm, schlammige Mangrovenwurzeln |
-| Ton | Ton |
+| Salzkristall | Lapislazulierz, Kupfererz (auch Tiefenschiefer) |
+| Torf | Tuff |
+| Tonklumpen | Ton |
 
 Passt etwas davon auf Ottonien nicht, kannst du die Liste in `config/minentimer/config.json` unter `autoMarkBlocks` ändern, mit Block-IDs wie `minecraft:iron_ore`.
 

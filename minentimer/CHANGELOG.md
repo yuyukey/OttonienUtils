@@ -3,6 +3,7 @@
 ## 1.6.0 (Testversion, noch nicht veröffentlicht)
 
 - **Auto-Markieren:** Neuer Schalter unter Einstellungen → „Auto-Markieren“, standardmäßig aus. Ist er an und du baust in der Nähe einer Mine ihren Rohstoff ab, startet ihr Timer von selbst, z. B. Eisenerz an einer Eisenmine oder Kohle an einem Kohlevorkommen. Es zählt der Markier-Radius (Standard 40 Blöcke). Andere Blöcke wie Stein lösen nichts aus, und ein laufender Timer wird nicht neu gestartet.
+- Diese Blöcke zählen wie auf Ottonien: Eisenerz → Eisen, Steinkohleerz → Steinkohle, Lapislazuli- und Kupfererz → Salzkristall, Tuff → Torf, Ton → Tonklumpen. Tiefenschiefer-Varianten zählen auch.
 - Welche Blöcke zu welchem Rohstoff gehören, steht in `config/minentimer/config.json` unter `autoMarkBlocks` und lässt sich dort ändern.
 
 ## 1.5.1

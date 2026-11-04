@@ -36,7 +36,8 @@ public enum ResourceType {
 			case EISEN -> List.of("minecraft:iron_ore", "minecraft:deepslate_iron_ore");
 			case KOHLE -> List.of("minecraft:coal_ore", "minecraft:deepslate_coal_ore");
 			case SALZ -> List.of("minecraft:lapis_ore", "minecraft:deepslate_lapis_ore", "minecraft:copper_ore", "minecraft:deepslate_copper_ore");
-			case TORF -> List.of("minecraft:mud", "minecraft:muddy_mangrove_roots");
+			// Auf Ottonien wird Torf als Tuff abgebaut
+			case TORF -> List.of("minecraft:tuff");
 			case TON -> List.of("minecraft:clay");
 		};
 	}

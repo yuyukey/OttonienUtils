@@ -138,6 +138,8 @@ public class ModConfig {
 				if (t != null && list != null) blocks.put(t, new ArrayList<>(list));
 			});
 		}
+		// Erste Testversion hatte für Torf noch Schlamm geraten
+		if (List.of("minecraft:mud", "minecraft:muddy_mangrove_roots").equals(blocks.get(ResourceType.TORF))) blocks.remove(ResourceType.TORF);
 		for (ResourceType t : ResourceType.values()) blocks.computeIfAbsent(t, k -> new ArrayList<>(k.defaultBlocks()));
 		autoMarkBlocks = blocks;
 		if (syncUrl == null) syncUrl = "";

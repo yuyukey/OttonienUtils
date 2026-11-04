@@ -108,6 +108,21 @@ public class MinenTimerClientTest implements FabricClientGameTest {
 				if (MinenTimerClient.autoMark(mc, pos, iron)) throw new AssertionError("Laufender Timer wurde neu gestartet");
 				if (MinenTimerClient.autoMark(mc, pos.offset(500, 0, 0), iron)) throw new AssertionError("Mine weit weg wurde markiert");
 				mgr.deleteMine(eisen);
+				// Torf ist auf Ottonien Tuff
+				Mine torf = mgr.createMine("Auto-Torf", pos.getX(), pos.getY(), pos.getZ());
+				torf.type = ResourceType.TORF;
+				mgr.saveMine(torf);
+				if (!MinenTimerClient.autoMark(mc, pos, net.minecraft.world.level.block.Blocks.TUFF.defaultBlockState())) throw new AssertionError("Tuff hat Torf nicht markiert");
+				mgr.deleteMine(torf);
+				ModConfig old = new com.google.gson.Gson().fromJson("{\"autoMarkBlocks\":{\"TORF\":[\"minecraft:mud\",\"minecraft:muddy_mangrove_roots\"]}}", ModConfig.class);
+				try {
+					var m = ModConfig.class.getDeclaredMethod("sanitize");
+					m.setAccessible(true);
+					m.invoke(old);
+				} catch (Exception e) {
+					throw new AssertionError(e);
+				}
+				if (!java.util.List.of("minecraft:tuff").equals(old.autoMarkBlocks.get(ResourceType.TORF))) throw new AssertionError("Alte Torf-Liste nicht ersetzt: " + old.autoMarkBlocks);
 			});
 			// Echter Abbau im Spiel: Ton-Block neben dem Spieler abbauen
 			ctx.runOnClient(mc -> {
