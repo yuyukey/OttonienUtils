@@ -17,3 +17,4 @@ rootProject.name = 'OttonienUtils'
 // Jede Mod liegt in einem eigenen Ordner
 include 'minentimer'
 include 'lehenskarte'
+include 'aktivitaeten'

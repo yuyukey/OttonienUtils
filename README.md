@@ -10,6 +10,7 @@ Kleine Client-Mods für den Minecraft-Rollenspiel-Server **Ottonien**, damit der
 |---|---|---|
 | [Minen-Timer](minentimer/README.md) | Respawn-Timer für Minen und Vorkommen mit Overlay, Lehen-Gruppen und Timern, die du pro Lehen mit anderen teilst | siehe [Changelog](minentimer/CHANGELOG.md) |
 | [Lehenskarte](lehenskarte/README.md) | Alle Lehen mit Grenzen, Farben der Machtbereiche und aktuellen Wappen in Xaero's World Map und Minimap | siehe [Changelog](lehenskarte/CHANGELOG.md) |
+| [Aktivitäten](aktivitaeten/README.md) | Liste im Spiel, bei welchen Gefolgen gerade Aktivitäten sind, mit Wappen, orange oder rot nach Stärke | siehe [Changelog](aktivitaeten/CHANGELOG.md) |
 
 
 Weitere Mods folgen.
@@ -28,6 +29,7 @@ Wie die einzelnen Mods funktionieren, steht in ihrer eigenen Anleitung.
 OttonienUtils/
 ├── minentimer/        Minen-Timer (Mod, Anleitung, Changelog, Sync-Server)
 ├── lehenskarte/       Lehenskarte (Mod, Anleitung, Changelog)
+├── aktivitaeten/      Aktivitäten (Mod, Anleitung, Changelog)
 ├── gradle/            Gradle-Wrapper, gemeinsam für alle Mods
 ├── gradle.properties  gemeinsame Versionen (Minecraft, Fabric)
 └── settings.gradle    Liste aller Mods

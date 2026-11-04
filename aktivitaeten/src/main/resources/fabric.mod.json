@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "aktivitaeten",
+	"version": "${version}",
+	"name": "Aktivitäten",
+	"description": "Zeigt im Spiel als Liste, in welchen Lehen von Ottonien gerade Aktivitäten sind, mit Entfernung und Richtung. Daten live von karte.ottonien.com. Inoffiziell, von Spielern für Spieler.",
+	"authors": ["yuyukey"],
+	"contact": {
+		"sources": "https://github.com/yuyukey/OttonienUtils",
+		"issues": "https://github.com/yuyukey/OttonienUtils/issues"
+	},
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["de.aktivitaeten.AktivitaetenClient"],
+		"modmenu": ["de.aktivitaeten.gui.AktivitaetenModMenu"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"recommends": {
+		"modmenu": "*"
+	}
+}
