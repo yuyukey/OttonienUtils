@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.2
+
+- Das Minen-Overlay bleibt sichtbar, wenn Hitboxen (F3+B) oder andere Debug-Anzeigen an sind. Es verschwindet nur noch beim F3-Bildschirm.
+
 ## 1.8.1
 
 - **Neues Overlay-Design** passend zur Aktivitäten-Mod: dunkle Fläche mit feinem goldenem Rahmen, Titel mit Anzahl bereiter Minen und Trennlinie. Bereite Minen sind grün hinterlegt und haben einen pulsierenden Punkt.

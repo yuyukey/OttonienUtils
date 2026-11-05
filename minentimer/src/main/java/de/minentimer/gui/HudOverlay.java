@@ -52,7 +52,8 @@ public final class HudOverlay {
 		Minecraft mc = Minecraft.getInstance();
 		ModConfig cfg = ModConfig.get();
 		if (!cfg.overlayEnabled || mc.player == null || mc.options.hideGui) return;
-		if (mc.getDebugOverlay().showDebugScreen() || mc.screen instanceof MineListScreen || mc.screen instanceof OverlayMoveScreen
+		// nur beim richtigen F3-Bildschirm ausblenden, nicht schon bei Hitboxen (F3+B) oder anderen Debug-Anzeigen
+		if (mc.debugEntries.isOverlayVisible() || mc.screen instanceof MineListScreen || mc.screen instanceof OverlayMoveScreen
 				|| mc.screen instanceof net.minecraft.client.gui.screens.ChatScreen) return;
 		List<Line> lines = lines(mc, cfg);
 		if (!lines.isEmpty()) draw(g, lines);
