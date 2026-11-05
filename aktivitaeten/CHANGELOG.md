@@ -1,5 +1,10 @@
 # Changelog – Aktivitäten
 
+## 0.1.1
+
+- NPC-Dörfer ohne Gefolge (z. B. Holdern) zeigen ihr eigenes Wappen statt „kein Wappen“
+- Die Liste bleibt sichtbar, wenn Hitboxen (F3+B) oder andere Debug-Anzeigen an sind. Sie verschwindet nur noch beim F3-Bildschirm.
+
 ## 0.1.0
 
 Erste Version.

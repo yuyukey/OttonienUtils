@@ -47,6 +47,15 @@ public final class Banners {
 		return s.replaceAll("[^a-z0-9_.-]", "_");
 	}
 
+	/** NPC-Dörfer haben kein Gefolge, aber ein eigenes Wappen im Ottonien-Paket (z. B. wappen_holdern). */
+	private static final java.util.Set<String> VILLAGES = java.util.Set.of("holdern", "kuestgrab", "muehlsverd", "pfardorf", "pfuhldorf", "quelltal", "johannshof", "koenigsburg");
+
+	/** Wappen eines Lehens: das des Gefolges, sonst bei NPC-Dörfern das des Dorfs, sonst leer. */
+	public static String forLehen(String factionBanner, String regionName) {
+		if (factionBanner != null && !factionBanner.isBlank()) return factionBanner;
+		return regionName != null && VILLAGES.contains(normalize(regionName)) ? regionName : "";
+	}
+
 	/** Textur des Wappens oder null, solange es noch lädt. Fehlt es, kommt das leere Wappen. */
 	public static Identifier texture(String banner) {
 		String name = normalize(banner);

@@ -138,7 +138,7 @@ public final class ActivityData {
 			String id = str(r, "id");
 			JsonObject f = ownerByRegion.get(id);
 			list.add(new Activity(id, str(r, "name"), num(r, "x"), num(r, "z"), level,
-					f != null ? str(f, "name") : "", f != null ? str(f, "rank_name") : "", f != null ? str(f, "banner") : ""));
+					f != null ? str(f, "name") : "", f != null ? str(f, "rank_name") : "", Banners.forLehen(f != null ? str(f, "banner") : "", str(r, "name"))));
 		}
 		list.sort(Comparator.comparing(Activity::name));
 		return new Snapshot(List.copyOf(list), count, System.currentTimeMillis());

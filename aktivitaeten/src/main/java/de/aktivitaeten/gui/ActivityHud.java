@@ -53,7 +53,8 @@ public final class ActivityHud {
 		Config cfg = Config.get();
 		if (!cfg.hudEnabled || !AktivitaetenClient.isActive() || mc.options.hideGui) return;
 		// beim offenen Chat sichtbar bleiben, bei anderen Menüs ausblenden
-		if (mc.getDebugOverlay().showDebugScreen() || (mc.screen != null && !(mc.screen instanceof ChatScreen))) return;
+		// nur beim richtigen F3-Bildschirm ausblenden, nicht schon bei Hitboxen (F3+B) oder anderen Debug-Anzeigen
+		if (mc.debugEntries.isOverlayVisible() || (mc.screen != null && !(mc.screen instanceof ChatScreen))) return;
 		ActivityData.Snapshot snap = ActivityData.get();
 		if (!snap.loaded()) return;
 
