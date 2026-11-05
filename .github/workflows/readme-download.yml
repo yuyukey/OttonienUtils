@@ -1,0 +1,49 @@
+# Setzt bei jedem neuen Release den Download-Link der Mod in der README-Tabelle auf die neue JAR.
+name: README-Download-Link
+
+on:
+  release:
+    types: [published]
+  # Zum Nachholen: von Hand starten, mit Release-Tag
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release-Tag, z. B. aktivitaeten-v0.1.1"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: readme-download
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Download-Link anpassen und pushen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          URL=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets \
+            --jq '[.assets[] | select(.name | endswith(".jar"))][0].url')
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "::error::Release $TAG hat keine JAR."
+            exit 1
+          fi
+          RESULT=$(python3 .github/scripts/update_download_link.py "$TAG" "$URL" README.md)
+          echo "$RESULT"
+          [ "$RESULT" = "changed" ] || exit 0
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "README: Download-Link für $TAG"
+          # Falls inzwischen jemand anderes gepusht hat, einmal neu aufsetzen
+          git push origin HEAD:main || { git pull --rebase origin main && git push origin HEAD:main; }
