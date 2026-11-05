@@ -163,6 +163,11 @@ public class LehenskarteClientTest implements FabricClientGameTest {
 				de.lehenskarte.Config.get().hudX = 0.5;
 				de.lehenskarte.Config.get().hudY = 0;
 			});
+
+			// NPC-Dorf ohne Gefolge: eigenes Wappen (wappen_holdern) statt „kein Wappen“
+			world.getServer().runCommand("tp @a -1776 140 410");
+			ctx.waitTicks(100);
+			ctx.takeScreenshot("lehenskarte-hud-holdern");
 		}
 	}
 

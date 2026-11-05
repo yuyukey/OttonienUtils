@@ -39,7 +39,8 @@ public class HudPositionScreen extends Screen {
 			String lehen = r != null ? r.name() : s.id();
 			line1 = f != null ? f.name() : lehen;
 			line2 = f != null ? lehen + " · " + f.rank() : (r != null && !r.enabled() ? "gesperrt" : "frei");
-			tex = f != null ? Banners.texture(f.banner()) : null;
+			String bannerName = Banners.forLehen(f != null ? f.banner() : "", r != null ? r.name() : "");
+			tex = bannerName.isEmpty() ? null : Banners.texture(bannerName);
 			accent = 0xFF000000 | LehenState.style().baseRgb()[s.index()];
 		}
 		int bw = 98, gap = 4, y = height / 2 + 20;

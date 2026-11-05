@@ -1,5 +1,10 @@
 # Changelog – Lehenskarte
 
+## 0.1.3
+
+- NPC-Dörfer ohne Gefolge (z. B. Holdern) zeigen ihr eigenes Wappen statt „kein Wappen“
+- Die Anzeige oben bleibt sichtbar, wenn Hitboxen (F3+B) oder andere Debug-Anzeigen an sind. Sie verschwindet nur noch beim F3-Bildschirm.
+
 ## 0.1.2
 
 - Die Anzeige oben lässt sich verschieben: in den Einstellungen „Anzeige oben verschieben…“ und mit der Maus an die gewünschte Stelle ziehen (`"hudX"`/`"hudY"`)

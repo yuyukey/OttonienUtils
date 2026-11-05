@@ -27,7 +27,8 @@ public final class LehenHud {
 	public static void render(GuiGraphics g, DeltaTracker delta) {
 		Minecraft mc = Minecraft.getInstance();
 		if (!Config.get().hudEnabled || !LehenState.isActive() || mc.options.hideGui) return;
-		if (mc.getDebugOverlay().showDebugScreen() || mc.screen != null) return;
+		// nur beim richtigen F3-Bildschirm ausblenden, nicht schon bei Hitboxen (F3+B) oder anderen Debug-Anzeigen
+		if (mc.debugEntries.isOverlayVisible() || mc.screen != null) return;
 		LehenGeometry.Shape s = current(mc);
 		if (s == null) return;
 		OttonienData.Snapshot data = LehenState.style().data();
@@ -38,7 +39,8 @@ public final class LehenHud {
 		String line1 = f != null ? f.name() : lehen;
 		String line2 = f != null ? lehen + " · " + f.rank() : (r != null && !r.enabled() ? "gesperrt" : "frei");
 
-		Identifier tex = f != null ? Banners.texture(f.banner()) : null;
+		String bannerName = Banners.forLehen(f != null ? f.banner() : "", r != null ? r.name() : "");
+		Identifier tex = bannerName.isEmpty() ? null : Banners.texture(bannerName);
 		draw(g, mc.font, line1, line2, tex, 0xFF000000 | LehenState.style().baseRgb()[s.index()]);
 	}
 

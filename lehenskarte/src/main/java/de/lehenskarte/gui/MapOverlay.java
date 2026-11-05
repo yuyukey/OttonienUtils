@@ -214,7 +214,7 @@ public final class MapOverlay {
 		for (LehenGroups.Group grp : order) {
 			LehenGeometry.Shape root = geo.shape(grp.root());
 			OttonienData.Faction f = data.owner(root.id());
-			// freie und gesperrte Lehen: leeres Wappen „kein Wappen“ und der Name des Lehens
+			// freie und gesperrte Lehen: leeres Wappen „kein Wappen“ (NPC-Dörfer ihr eigenes) und der Name des Lehens
 			float a = f != null ? alpha : 1f;
 			String name;
 			if (f != null) {
@@ -233,7 +233,8 @@ public final class MapOverlay {
 			int nw = showName ? font.width(name) : 0;
 			int half = Math.max(size, nw) / 2;
 			if (!place(taken, x - half, by, x + half, by + size + (showName ? 11 : 0))) continue;
-			Identifier tex = Banners.texture(f != null ? f.banner() : "");
+			OttonienData.Region rr = data.region(root.id());
+			Identifier tex = Banners.texture(Banners.forLehen(f != null ? f.banner() : "", rr != null ? rr.name() : ""));
 			int tint = (Math.round(a * (f != null ? 255 : 220)) << 24) | 0xFFFFFF;
 			if (tex != null) g.blit(RenderPipelines.GUI_TEXTURED, tex, bx, by, 0, 0, size, size, 16, 16, 16, 16, tint);
 			if (showName) outlined(g, font, name, x, by + size + 2, f != null ? 0xFFFFFFFF : 0xFFD8D8D8, a);
@@ -309,7 +310,8 @@ public final class MapOverlay {
 		g.fill(x, y, x + w, y + 2, accent);
 		g.renderOutline(x, y, w, h, 0xFF5A4A35);
 
-		Identifier tex = f != null ? Banners.texture(f.banner()) : null;
+		String bannerName = Banners.forLehen(f != null ? f.banner() : "", r != null ? r.name() : "");
+		Identifier tex = bannerName.isEmpty() ? null : Banners.texture(bannerName);
 		if (tex != null) g.blit(RenderPipelines.GUI_TEXTURED, tex, x + 8, y + 8, 0, 0, 32, 32, 16, 16, 16, 16);
 		else g.fill(x + 8, y + 8, x + 40, y + 40, 0xFF2A2420);
 
