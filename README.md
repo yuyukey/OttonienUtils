@@ -10,7 +10,7 @@ Kleine Client-Mods für den Minecraft-Rollenspiel-Server **Ottonien**, damit der
 |---|---|---|---|
 | [Minen-Timer](minentimer/README.md) | Respawn-Timer für Minen und Vorkommen mit Overlay, Lehen-Gruppen und Timern, die du pro Lehen mit anderen teilst | [⬇️ 1.8.1](https://github.com/yuyukey/OttonienUtils/releases/download/minentimer-v1.8.1/minentimer-1.8.1.jar) | [Changelog](minentimer/CHANGELOG.md) · [alle Releases](https://github.com/yuyukey/OttonienUtils/releases?q=minentimer) |
 | [Lehenskarte](lehenskarte/README.md) | Alle Lehen mit Grenzen, Farben der Machtbereiche und aktuellen Wappen in Xaero's World Map und Minimap | [⬇️ 0.1.2](https://github.com/yuyukey/OttonienUtils/releases/download/lehenskarte-v0.1.2/lehenskarte-0.1.2.jar) | [Changelog](lehenskarte/CHANGELOG.md) · [alle Releases](https://github.com/yuyukey/OttonienUtils/releases?q=lehenskarte) |
-| [Aktivitäten](aktivitaeten/README.md) | Liste im Spiel, bei welchen Gefolgen gerade Aktivitäten sind, mit Wappen, orange oder rot nach Stärke | [⬇️ 0.1.0](https://github.com/yuyukey/OttonienUtils/releases/download/aktivitaeten-v0.1.0/aktivitaeten-0.1.0.jar) | [Changelog](aktivitaeten/CHANGELOG.md) · [alle Releases](https://github.com/yuyukey/OttonienUtils/releases?q=aktivitaeten) |
+| [Aktivitäten](aktivitaeten/README.md) | Liste im Spiel, bei welchen Gefolgen gerade Aktivitäten sind, mit Wappen, orange oder rot nach Stärke | [⬇️ 0.1.1](https://github.com/yuyukey/OttonienUtils/releases/download/aktivitaeten-v0.1.1/aktivitaeten-0.1.1.jar) | [Changelog](aktivitaeten/CHANGELOG.md) · [alle Releases](https://github.com/yuyukey/OttonienUtils/releases?q=aktivitaeten) |
 
 
 Weitere Mods folgen.
