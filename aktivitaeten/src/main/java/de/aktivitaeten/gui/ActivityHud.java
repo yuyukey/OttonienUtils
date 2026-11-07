@@ -55,6 +55,8 @@ public final class ActivityHud {
 		// beim offenen Chat sichtbar bleiben, bei anderen Menüs ausblenden
 		// nur beim richtigen F3-Bildschirm ausblenden, nicht schon bei Hitboxen (F3+B) oder anderen Debug-Anzeigen
 		if (mc.debugEntries.isOverlayVisible() || (mc.screen != null && !(mc.screen instanceof ChatScreen))) return;
+		// solange die Spielerliste (TAB) offen ist, ausblenden
+		if (mc.options.keyPlayerList.isDown()) return;
 		ActivityData.Snapshot snap = ActivityData.get();
 		if (!snap.loaded()) return;
 
