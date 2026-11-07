@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.3
+
+- Das Minen-Overlay bleibt verborgen, solange du TAB (Spielerliste) gedrückt hältst. Bei Hitboxen bleibt es sichtbar.
+
 ## 1.8.2
 
 - Das Minen-Overlay bleibt sichtbar, wenn Hitboxen (F3+B) oder andere Debug-Anzeigen an sind. Es verschwindet nur noch beim F3-Bildschirm.

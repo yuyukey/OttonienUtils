@@ -55,6 +55,8 @@ public final class HudOverlay {
 		// nur beim richtigen F3-Bildschirm ausblenden, nicht schon bei Hitboxen (F3+B) oder anderen Debug-Anzeigen
 		if (mc.debugEntries.isOverlayVisible() || mc.screen instanceof MineListScreen || mc.screen instanceof OverlayMoveScreen
 				|| mc.screen instanceof net.minecraft.client.gui.screens.ChatScreen) return;
+		// solange die Spielerliste (TAB) offen ist, ausblenden
+		if (mc.options.keyPlayerList.isDown()) return;
 		List<Line> lines = lines(mc, cfg);
 		if (!lines.isEmpty()) draw(g, lines);
 	}
