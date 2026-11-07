@@ -29,6 +29,8 @@ public final class LehenHud {
 		if (!Config.get().hudEnabled || !LehenState.isActive() || mc.options.hideGui) return;
 		// nur beim richtigen F3-Bildschirm ausblenden, nicht schon bei Hitboxen (F3+B) oder anderen Debug-Anzeigen
 		if (mc.debugEntries.isOverlayVisible() || mc.screen != null) return;
+		// solange die Spielerliste (TAB) offen ist, ausblenden
+		if (mc.options.keyPlayerList.isDown()) return;
 		LehenGeometry.Shape s = current(mc);
 		if (s == null) return;
 		OttonienData.Snapshot data = LehenState.style().data();

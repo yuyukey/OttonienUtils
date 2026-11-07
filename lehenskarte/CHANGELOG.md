@@ -1,5 +1,9 @@
 # Changelog – Lehenskarte
 
+## 0.1.4
+
+- Die Anzeige oben bleibt verborgen, solange du TAB (Spielerliste) gedrückt hältst. Bei Hitboxen bleibt sie sichtbar.
+
 ## 0.1.3
 
 - NPC-Dörfer ohne Gefolge (z. B. Holdern) zeigen ihr eigenes Wappen statt „kein Wappen“
