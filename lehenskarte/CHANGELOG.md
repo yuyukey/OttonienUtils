@@ -1,5 +1,9 @@
 # Changelog – Lehenskarte
 
+## 0.1.5
+
+- Grenzen auch in Xaero's Minimap: Grenzen zwischen Machtbereichen hell mit dunklem Rand, Grenzen innerhalb dünner. Abschaltbar in den Einstellungen („Grenzen in der Minimap“)
+
 ## 0.1.4
 
 - Die Anzeige oben bleibt verborgen, solange du TAB (Spielerliste) gedrückt hältst. Bei Hitboxen bleibt sie sichtbar.

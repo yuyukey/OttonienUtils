@@ -131,7 +131,9 @@ public class LehenskarteClientTest implements FabricClientGameTest {
 				return new int[]{m.xs()[0], m.zs()[0]};
 			});
 			world.getServer().runCommand("tp @a " + corner[0] + " 140 " + corner[1]);
-			ctx.waitTicks(40);
+			world.getClientWorld().waitForChunksRender();
+			ctx.waitTicks(80);
+			ctx.takeScreenshot("lehenskarte-minimap-grenze");
 			ctx.getInput().pressKey(openMap);
 			ctx.waitTicks(60);
 			for (int i = 0; i < 3; i++) {

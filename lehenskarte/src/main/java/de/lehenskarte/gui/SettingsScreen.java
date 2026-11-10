@@ -26,9 +26,9 @@ public class SettingsScreen extends Screen {
 	@Override
 	protected void init() {
 		Config c = Config.get();
-		int w = 150, h = 20, gap = 4;
+		int w = 150, h = 20, gap = 3;
 		int left = width / 2 - w - gap / 2, right = width / 2 + gap / 2;
-		int y = 40;
+		int y = 32;
 
 		toggle(left, y, w, h, "Karte", c.overlayEnabled, v -> c.overlayEnabled = v);
 		toggle(right, y, w, h, "Anzeige oben (HUD)", c.hudEnabled, v -> c.hudEnabled = v);
@@ -46,8 +46,10 @@ public class SettingsScreen extends Screen {
 		toggle(right, y, w, h, "Nur auf Ottonien", c.onlyOnOttonien, v -> c.onlyOnOttonien = v);
 		y += h + gap;
 		toggle(left, y, w, h, "NPC-Dörfer", c.npcVillages, v -> c.npcVillages = v);
+		toggle(right, y, w, h, "Grenzen in der Minimap", c.minimapBorders, v -> c.minimapBorders = v);
+		y += h + gap;
 		addRenderableWidget(Button.builder(Component.literal("Anzeige oben verschieben…"), b -> minecraft.setScreen(new HudPositionScreen(this)))
-				.bounds(right, y, w, h).build());
+				.bounds(left, y, w, h).build());
 
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, b -> onClose())
 				.bounds(width / 2 - 100, height - 28, 200, 20).build());

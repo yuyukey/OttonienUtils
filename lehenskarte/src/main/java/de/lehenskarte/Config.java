@@ -46,6 +46,8 @@ public final class Config {
 	public boolean notifyChanges = true;
 	/** NPC-Dörfer auf der World Map zeigen. */
 	public boolean npcVillages = true;
+	/** Grenzen als Linien in Xaero's Minimap zeichnen. */
+	public boolean minimapBorders = true;
 	/** Version des Dateiformats, für Anpassungen alter Einstellungen. */
 	public int configVersion = 0;
 

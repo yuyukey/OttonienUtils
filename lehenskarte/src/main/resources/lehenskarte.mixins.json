@@ -7,7 +7,9 @@
 	"client": [
 		"WorldMapHighlighterRegistryMixin",
 		"MinimapHighlighterRegistryMixin",
-		"GuiMapMixin"
+		"GuiMapMixin",
+		"MinimapFBORendererMixin",
+		"MinimapRendererAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 0

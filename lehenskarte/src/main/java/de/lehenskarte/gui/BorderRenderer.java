@@ -26,7 +26,7 @@ import java.util.function.ToIntFunction;
  * Grenzen zwischen Machtbereichen: kräftige helle Linie mit dunklem Rand. Grenzen innerhalb eines
  * Machtbereichs: dünne helle Linie.
  */
-final class BorderRenderer {
+public final class BorderRenderer {
 	/** Eine Kante eines Lehens in Weltkoordinaten; neighbour = Lehen auf der anderen Seite oder -1, nx/nz zeigt ins Lehen. */
 	private record Edge(int shape, int neighbour, double ax, double az, double bx, double bz, double nx, double nz, boolean realm) {
 	}
@@ -64,6 +64,19 @@ final class BorderRenderer {
 		cachedData = st.data();
 		edges = list;
 		return list;
+	}
+
+	public interface EdgeSink {
+		void edge(double ax, double az, double bx, double bz, boolean realm);
+	}
+
+	/** Für die Minimap: jede Grenze im Ausschnitt genau einmal, realm = Grenze zwischen Machtbereichen. */
+	public static void forEachEdge(LehenState.Style st, double minX, double minZ, double maxX, double maxZ, EdgeSink sink) {
+		for (Edge e : edges(st)) {
+			if (e.neighbour >= 0 && e.neighbour < e.shape) continue;
+			if (Math.max(e.ax, e.bx) < minX || Math.min(e.ax, e.bx) > maxX || Math.max(e.az, e.bz) < minZ || Math.min(e.az, e.bz) > maxZ) continue;
+			sink.edge(e.ax, e.az, e.bx, e.bz, e.realm);
+		}
 	}
 
 	private static int neighbourAt(LehenGeometry geo, LehenGeometry.Shape self, double x, double z) {
