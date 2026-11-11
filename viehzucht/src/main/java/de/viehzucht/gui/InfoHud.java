@@ -38,9 +38,17 @@ public final class InfoHud {
 		if (!ViehzuchtClient.isActive() || !Config.get().overlayEnabled || mc.options.hideGui || mc.player == null || mc.screen != null) return;
 		// solange die Spielerliste (TAB) offen ist, ausblenden
 		if (mc.options.keyPlayerList.isDown()) return;
+		Entity e = target(mc);
+		if (e != null) draw(g, mc.font, e, System.currentTimeMillis());
+	}
+
+	/** Das Tier, für das die Tafel gerade erscheint, oder {@code null}. */
+	public static Entity target(Minecraft mc) {
 		Entity e = mc.crosshairPickEntity;
-		if (!Tracker.isAnimal(e)) return;
-		draw(g, mc.font, e, System.currentTimeMillis());
+		if (!Tracker.isAnimal(e)) return null;
+		// Das eigene Reittier nicht anzeigen, solange man draufsitzt
+		if (mc.player != null && e.hasIndirectPassenger(mc.player)) return null;
+		return e;
 	}
 
 	public static AnimalInfo.Status status(Entity e, long now) {
@@ -96,6 +104,14 @@ public final class InfoHud {
 			rows.add(Row.text("Paarung ab Mast " + species.breedMast() + " · Wartezeit " + tableTime(species.cooldownMs()), DIM));
 		}
 
+		paint(g, font, name, gender, genderColor, stateColor, rows, species != null ? species.breedMast() : -1);
+	}
+
+	/**
+	 * Zeichnet die Tafel an ihrer eingestellten Stelle und Größe.
+	 * @return linke obere Ecke und Größe auf dem Bildschirm {x, y, w, h}
+	 */
+	private static int[] paint(GuiGraphics g, Font font, Component name, String gender, int genderColor, int stateColor, List<Row> rows, int breedMast) {
 		// Größe ausmessen
 		int pad = 5, barW = 50, lineH = 11;
 		int headW = font.width(name) + (gender.isEmpty() ? 0 : 8 + font.width(gender));
@@ -107,9 +123,13 @@ public final class InfoHud {
 		}
 		w += pad * 2 + 3;
 		int h = pad + 10 + 3 + rows.size() * lineH + pad - 2;
-		int x = g.guiWidth() / 2 + 14;
-		int y = g.guiHeight() / 2 - 14;
-		if (x + w > g.guiWidth() - 2) x = g.guiWidth() - 2 - w;
+		float scale = scale();
+		int sw = Math.round(w * scale), sh = Math.round(h * scale);
+		int[] pos = position(g.guiWidth(), g.guiHeight(), sw, sh);
+		g.pose().pushMatrix();
+		g.pose().translate(pos[0], pos[1]);
+		g.pose().scale(scale, scale);
+		int x = 0, y = 0;
 
 		g.fill(x, y, x + w, y + h, 0xB0101010);
 		g.fill(x, y, x + 3, y + h, stateColor);
@@ -123,7 +143,7 @@ public final class InfoHud {
 			if (r.barMax > 0) {
 				g.drawString(font, r.label, tx, ty, GRAY, false);
 				int bx = tx + font.width(r.label) + 4, by = ty + 2;
-				int need = species != null ? species.breedMast() : r.barMax;
+				int need = breedMast > 0 ? breedMast : r.barMax;
 				int fillColor = r.barValue >= need ? GREEN : YELLOW;
 				g.fill(bx, by, bx + barW, by + 5, 0xFF303030);
 				g.fill(bx, by, bx + (int) Math.round(barW * Math.min(1.0, r.barValue / (double) r.barMax)), by + 5, fillColor);
@@ -136,6 +156,32 @@ public final class InfoHud {
 			}
 			ty += lineH;
 		}
+		g.pose().popMatrix();
+		return new int[]{pos[0], pos[1], sw, sh};
+	}
+
+	/** Größe der Tafel aus den Einstellungen, 50 % bis 200 %. */
+	public static float scale() {
+		return Math.max(0.5f, Math.min(2f, Config.get().hudScale));
+	}
+
+	/** Neben dem Fadenkreuz, um die eigene Verschiebung versetzt und im Bildschirm gehalten. */
+	public static int[] position(int screenW, int screenH, int w, int h) {
+		int x = screenW / 2 + 14 + Config.get().offsetX;
+		int y = screenH / 2 - 14 + Config.get().offsetY;
+		x = Math.max(2, Math.min(x, screenW - 2 - w));
+		y = Math.max(2, Math.min(y, screenH - 2 - h));
+		return new int[]{x, y};
+	}
+
+	/** Beispiel-Tafel für das Verschieben-Fenster. */
+	public static int[] drawPreview(GuiGraphics g, Font font) {
+		List<Row> rows = new ArrayList<>();
+		rows.add(Row.text("❤ Paarungsbereit", GREEN));
+		rows.add(new Row("Mast", "80/80", WHITE, 80, 80));
+		rows.add(new Row("Melkbar", "bereit", GREEN, -1, -1));
+		rows.add(Row.text("Stand: vor 2 Min", DIM));
+		return paint(g, font, Component.literal("Rotvieh Rind").withColor(0xFFAA00), "♀ Kuh", FEMALE, GREEN, rows, 80);
 	}
 
 	/** Melkbar, Scherbar, Mastverlust, Leben … mit live laufender Zeit. */

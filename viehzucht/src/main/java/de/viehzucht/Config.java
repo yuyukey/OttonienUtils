@@ -28,6 +28,11 @@ public final class Config {
 	public int hoverDelayMs = 150;
 	/** Ältere Infos beim Anvisieren neu abfragen. */
 	public int autoRefreshSeconds = 60;
+	/** Größe der Tafel (1 = 100 %). */
+	public float hudScale = 1.0f;
+	/** Verschiebung der Tafel gegenüber ihrer Stelle neben dem Fadenkreuz (GUI-Pixel). */
+	public int offsetX = 0;
+	public int offsetY = 0;
 	/** ♂/♀ an den Namen über dem Tier hängen. */
 	public boolean nametagGender = true;
 	/** Analyse-Datei schreiben (nur zur Fehlersuche). */

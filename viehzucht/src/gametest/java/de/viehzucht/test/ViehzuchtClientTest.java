@@ -5,6 +5,8 @@ import de.viehzucht.data.AnimalStore;
 import de.viehzucht.data.AutoQuery;
 import de.viehzucht.data.Species;
 import de.viehzucht.data.Tracker;
+import de.viehzucht.Config;
+import de.viehzucht.gui.HudPositionScreen;
 import de.viehzucht.gui.InfoHud;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -100,6 +102,45 @@ public class ViehzuchtClientTest implements FabricClientGameTest {
 				if (AutoQuery.sentCount() != sentBefore[0] + 2) throw new AssertionError("Zu viele Abfragen: " + (AutoQuery.sentCount() - sentBefore[0]));
 				if (mc.getSingleplayerServer().getPlayerList().getPlayers().getFirst().isShiftKeyDown()) throw new AssertionError("Schleichen nicht gelöst");
 			});
+
+			// Tafel größer und verschoben
+			ctx.runOnClient(mc -> {
+				Config.get().hudScale = 1.5f;
+				Config.get().offsetX = -60;
+				Config.get().offsetY = -70;
+			});
+			look(ctx, "bulle");
+			ctx.takeScreenshot("viehzucht-7-gross-verschoben");
+			ctx.runOnClient(mc -> {
+				int gw = mc.getWindow().getGuiScaledWidth(), gh = mc.getWindow().getGuiScaledHeight();
+				int[] p = InfoHud.position(gw, gh, 100, 50);
+				if (p[0] != gw / 2 + 14 - 60 || p[1] != gh / 2 - 14 - 70) throw new AssertionError("Position: " + p[0] + "," + p[1]);
+				int[] edge = InfoHud.position(gw, gh, 100, 50);
+				Config.get().offsetX = 5000;
+				edge = InfoHud.position(gw, gh, 100, 50);
+				if (edge[0] != gw - 2 - 100) throw new AssertionError("Rand: " + edge[0]);
+				Config.get().offsetX = -60;
+				mc.setScreen(new HudPositionScreen());
+			});
+			ctx.waitTicks(3);
+			ctx.takeScreenshot("viehzucht-8-anpassen");
+			ctx.runOnClient(mc -> {
+				mc.setScreen(null);
+				Config.get().hudScale = 1.0f;
+				Config.get().offsetX = 0;
+				Config.get().offsetY = 0;
+			});
+
+			// Auf dem eigenen Pferd: keine Tafel für das Reittier
+			world.getServer().runCommand("execute as @p at @s run summon horse ~ ~ ~ {NoAI:1b,Tame:1b,Tags:[\"ross\"],CustomName:{text:\"Reitpferd\",color:\"gold\"},SaddleItem:{id:\"saddle\",count:1}}");
+			world.getServer().runCommand("execute as @p at @s run ride @s mount @e[tag=ross,limit=1,sort=nearest]");
+			ctx.waitFor(mc -> mc.player.getVehicle() != null, 60);
+			ctx.runOnClient(mc -> {
+				mc.crosshairPickEntity = mc.player.getVehicle();
+				if (InfoHud.target(mc) != null) throw new AssertionError("Tafel für das eigene Reittier");
+			});
+			world.getServer().runCommand("execute as @p run ride @s dismount");
+			ctx.waitFor(mc -> mc.player.getVehicle() == null, 60);
 
 			// Fremde Nachrichten ohne Klick bleiben unberührt
 			ctx.runOnClient(mc -> {

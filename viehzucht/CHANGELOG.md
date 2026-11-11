@@ -1,5 +1,10 @@
 # Changelog – Viehzucht
 
+## 0.1.1
+
+- Keine Tafel mehr für das eigene Reittier, solange du draufsitzt
+- Tafel skalierbar und verschiebbar: `/viehzucht anpassen` (mit der Maus ziehen, Mausrad für die Größe), `groesse`, `verschieben`, `zuruecksetzen`
+
 ## 0.1.0
 
 Erste Version.

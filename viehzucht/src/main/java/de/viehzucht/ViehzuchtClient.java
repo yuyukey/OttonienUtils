@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import de.viehzucht.data.AnimalStore;
 import de.viehzucht.data.AutoQuery;
 import de.viehzucht.data.Tracker;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import de.viehzucht.gui.HudPositionScreen;
 import de.viehzucht.gui.InfoHud;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -38,6 +40,7 @@ public class ViehzuchtClient implements ClientModInitializer {
 
 	public static KeyMapping toggleKey;
 	private static boolean active;
+	private static boolean openPositionScreen;
 
 	@Override
 	public void onInitializeClient() {
@@ -80,6 +83,34 @@ public class ViehzuchtClient implements ClientModInitializer {
 						.then(ClientCommandManager.literal("auto")
 								.then(ClientCommandManager.literal("an").executes(c -> setAuto(c.getSource(), true)))
 								.then(ClientCommandManager.literal("aus").executes(c -> setAuto(c.getSource(), false))))
+						.then(ClientCommandManager.literal("anpassen").executes(c -> {
+							openPositionScreen = true;
+							return 1;
+						}))
+						.then(ClientCommandManager.literal("groesse")
+								.then(ClientCommandManager.argument("prozent", IntegerArgumentType.integer(50, 200)).executes(c -> {
+									Config.get().hudScale = IntegerArgumentType.getInteger(c, "prozent") / 100f;
+									Config.get().save();
+									say(c.getSource(), "Tafel auf " + IntegerArgumentType.getInteger(c, "prozent") + " %");
+									return 1;
+								})))
+						.then(ClientCommandManager.literal("verschieben")
+								.then(ClientCommandManager.argument("x", IntegerArgumentType.integer(-2000, 2000))
+										.then(ClientCommandManager.argument("y", IntegerArgumentType.integer(-2000, 2000)).executes(c -> {
+											Config.get().offsetX += IntegerArgumentType.getInteger(c, "x");
+											Config.get().offsetY += IntegerArgumentType.getInteger(c, "y");
+											Config.get().save();
+											say(c.getSource(), "Tafel verschoben, gesamt jetzt X " + Config.get().offsetX + " / Y " + Config.get().offsetY);
+											return 1;
+										}))))
+						.then(ClientCommandManager.literal("zuruecksetzen").executes(c -> {
+							Config.get().offsetX = 0;
+							Config.get().offsetY = 0;
+							Config.get().hudScale = 1.0f;
+							Config.get().save();
+							say(c.getSource(), "Tafel wieder neben dem Fadenkreuz in normaler Größe");
+							return 1;
+						}))
 						.then(ClientCommandManager.literal("vergessen").executes(c -> forget(c.getSource())))
 						.then(ClientCommandManager.literal("analyse")
 								.executes(c -> analysisInfo(c.getSource()))
@@ -94,6 +125,11 @@ public class ViehzuchtClient implements ClientModInitializer {
 	}
 
 	private static void onTick(Minecraft mc) {
+		// Erst im nächsten Tick öffnen, sonst schließt der Chat das Fenster gleich wieder
+		if (openPositionScreen) {
+			openPositionScreen = false;
+			mc.setScreen(new HudPositionScreen());
+		}
 		while (toggleKey.consumeClick()) {
 			Config.get().overlayEnabled = !Config.get().overlayEnabled;
 			Config.get().save();
@@ -122,7 +158,7 @@ public class ViehzuchtClient implements ClientModInitializer {
 		say(src, "Viehzucht: " + AnimalStore.size() + " Tiere gemerkt, Overlay " + (Config.get().overlayEnabled ? "an" : "aus")
 				+ (Config.get().onlyOnOttonien && !active ? " (nur auf Ottonien)" : ""));
 		src.sendFeedback(Component.literal("Tier kurz anvisieren (oder Shift + Rechtsklick): die Mod holt die Infos, merkt sie sich und zählt die Zeiten weiter.").withStyle(ChatFormatting.GRAY));
-		src.sendFeedback(Component.literal("/viehzucht an|aus · auto an|aus · chat an|aus · vergessen · analyse").withStyle(ChatFormatting.GRAY));
+		src.sendFeedback(Component.literal("/viehzucht an|aus · anpassen · groesse <%> · verschieben <x> <y> · zuruecksetzen · auto an|aus · chat an|aus · vergessen · analyse").withStyle(ChatFormatting.GRAY));
 		return 1;
 	}
 

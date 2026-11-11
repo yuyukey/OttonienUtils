@@ -23,6 +23,8 @@ Ottonien schickt die Infos zu einem Tier nur in den Chat, wenn man es mit **Shif
 
 Damit dabei nichts passiert, fragt die Mod nicht, wenn du ein passendes Futter, eine Leine, eine Schere, einen Eimer, ein Namensschild oder einen Sattel in der Hand hast. Sie fragt auch nicht, wenn du reitest, schleichst, sprintest, gerade etwas benutzt oder eben selbst geklickt hast. Bei Pferden sendet sie kurz „Schleichen“ mit, damit du nicht aufsteigst. Der Ablauf ist von [OttoExtra](https://github.com/Skyfuller1303/OttoExtra) (Skyfuller1303, MIT-Lizenz) übernommen. Mit `/viehzucht auto aus` schaltest du die automatische Abfrage ab, dann geht es wie bisher per Shift + Rechtsklick.
 
+Sitzt du auf einem Pferd, zeigt die Tafel dein eigenes Reittier nicht an.
+
 „Stand: vor 5 Min“ zeigt, wie alt die Infos sind.
 
 Siehst du Herzchen über zwei Tieren und erscheint daneben ein Jungtier, merkt sich die Mod die Paarung. Sie zeigt dann die Wartezeit aus Ottoniens Tabelle als Schätzung an, bis du das Tier wieder anklickst.
@@ -33,6 +35,10 @@ Siehst du Herzchen über zwei Tieren und erscheint daneben ein Jungtier, merkt s
 |---|---|
 | `/viehzucht` | Kurze Hilfe und wie viele Tiere gemerkt sind |
 | `/viehzucht an` / `aus` | Tafel ein- oder ausblenden (auch per Taste, in den Steuerungseinstellungen unter „Viehzucht“) |
+| `/viehzucht anpassen` | Fenster, in dem du die Tafel mit der Maus verschiebst und mit dem Mausrad größer oder kleiner machst |
+| `/viehzucht groesse <Prozent>` | Größe der Tafel, 50 bis 200 |
+| `/viehzucht verschieben <x> <y>` | Tafel um so viele Pixel verschieben, z. B. `verschieben 0 -40` schiebt sie nach oben |
+| `/viehzucht zuruecksetzen` | Tafel wieder neben dem Fadenkreuz in normaler Größe |
 | `/viehzucht auto an` / `aus` | Automatische Abfrage beim Anvisieren ein- oder ausschalten |
 | `/viehzucht chat aus` / `an` | Die Tier-Infos des Servers im Chat ausblenden, weil sie auf der Tafel stehen, oder wieder anzeigen |
 | `/viehzucht vergessen` | Alle gemerkten Tiere auf diesem Server löschen |
