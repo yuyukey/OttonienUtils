@@ -21,6 +21,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.multiplayer.ServerData;
@@ -28,6 +29,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,14 +110,32 @@ public class SchreibstubeClient implements ClientModInitializer {
 			return InteractionResult.PASS;
 		});
 
-		// Im geöffneten Brief: weiterschreiben oder verschicken
+		// Im geöffneten Brief: weiterschreiben oder verschicken; einen erhaltenen Brief in den Editor holen
 		ScreenEvents.AFTER_INIT.register((client, screen, w, h) -> {
-			if (!(screen instanceof BookViewScreen) || client.player == null || !HeldLetter.isStarted(client.player.getMainHandItem())) return;
+			if (!(screen instanceof BookViewScreen) || client.player == null) return;
+			ItemStack received = receivedLetter(client.player);
+			if (received != null) {
+				Screens.getButtons(screen).add(Button.builder(Component.literal("✒ Im Editor öffnen"), b -> HeldLetter.importable(received)
+								.ifPresent(text -> client.setScreen(new LetterScreen(null).opening(text))))
+						.tooltip(Tooltip.create(Component.literal("Text samt Farben in die Schreibstube übernehmen, zum Bearbeiten, Speichern oder Kopieren.")))
+						.bounds(6, 6, 130, 20).build());
+				return;
+			}
+			if (!HeldLetter.isStarted(client.player.getMainHandItem())) return;
 			Screens.getButtons(screen).add(Button.builder(Component.literal("✒ Weiterschreiben"), b -> client.setScreen(new LetterScreen(null)))
 					.bounds(6, 6, 110, 20).build());
 			Screens.getButtons(screen).add(Button.builder(Component.literal("✉ Verschicken …"), b -> client.setScreen(new RecipientScreen(null, null)))
 					.bounds(6, 30, 110, 20).build());
 		});
+	}
+
+	/** Ein fertiger Brief (mit Empfänger „Zu …“) in einer der Hände, sonst null. */
+	private static ItemStack receivedLetter(Player player) {
+		for (InteractionHand hand : InteractionHand.values()) {
+			ItemStack s = player.getItemInHand(hand);
+			if (HeldLetter.isLetter(s) && !HeldLetter.isStarted(s)) return s;
+		}
+		return null;
 	}
 
 	private static int open(Supplier<Screen> screen) {

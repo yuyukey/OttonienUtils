@@ -43,9 +43,12 @@ public final class HeldLetter {
 		return title != null && title.contains("Brief von");
 	}
 
-	/** Ein angefangener Brief, an den /letter weiter anhängt (noch ohne Empfänger „Zu …“). */
+	/**
+	 * Ein angefangener Brief, an den /letter weiter anhängt: von einem selbst und noch ohne Empfänger „Zu …“.
+	 * Erhaltene Briefe haben nicht immer ein „Zu …“, darum zählt auch der Absender im Titel.
+	 */
 	public static boolean isStarted(ItemStack s) {
-		if (!isLetter(s)) return false;
+		if (!isLetter(s) || !isFromMe(s)) return false;
 		ItemLore lore = s.get(DataComponents.LORE);
 		if (lore != null) {
 			for (Component line : lore.lines()) {
@@ -54,6 +57,18 @@ public final class HeldLetter {
 			}
 		}
 		return true;
+	}
+
+	/** Absender aus „Brief von Name“ (sonst der Autor des Buchs) ist der eigene Spieler. */
+	private static boolean isFromMe(ItemStack s) {
+		var player = net.minecraft.client.Minecraft.getInstance().player;
+		WrittenBookContent book = s.get(DataComponents.WRITTEN_BOOK_CONTENT);
+		if (player == null || book == null) return true;
+		String title = ChatFormatting.stripFormatting(book.title().raw());
+		int at = title == null ? -1 : title.indexOf("Brief von");
+		String sender = at >= 0 ? title.substring(at + "Brief von".length()).strip() : book.author();
+		if (sender.isEmpty()) sender = book.author();
+		return sender.equalsIgnoreCase(player.getGameProfile().name());
 	}
 
 	public static boolean isWritable(ItemStack s) {

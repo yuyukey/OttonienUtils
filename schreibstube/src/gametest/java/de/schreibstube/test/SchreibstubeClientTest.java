@@ -68,6 +68,39 @@ public class SchreibstubeClientTest implements FabricClientGameTest {
 			mouseWheelie(ctx, world, supply, false);
 			mouseWheelie(ctx, world, supply, true);
 
+			// Erhaltenen Brief lesen und mit einem Klick in den Editor holen; der alte Entwurf wird gesichert
+			ctx.runOnClient(mc -> de.schreibstube.Drafts.saveCurrent(RichText.parseLegacy("Mein Entwurf", false)));
+			world.getServer().runCommand("item replace entity @a weapon.mainhand with minecraft:written_book[minecraft:written_book_content="
+					+ "{title:\"§7Brief von §6Kamerad\",author:\"Kamerad\",pages:[{text:\"Liebe Grüße\",color:\"dark_red\"},\"Seite zwei\"]}]");
+			ctx.waitTicks(5);
+			ctx.runOnClient(mc -> mc.setScreen(new net.minecraft.client.gui.screens.inventory.BookViewScreen(
+					net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(mc.player.getMainHandItem()))));
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("schreibstube-brief-erhalten");
+			ctx.runOnClient(mc -> {
+				var button = mc.screen.children().stream()
+						.filter(w -> w instanceof net.minecraft.client.gui.components.Button b && b.getMessage().getString().contains("Im Editor öffnen"))
+						.map(w -> (net.minecraft.client.gui.components.Button) w).findFirst()
+						.orElseThrow(() -> new AssertionError("Knopf „Im Editor öffnen“ fehlt"));
+				if (mc.screen.children().stream().anyMatch(w -> w instanceof net.minecraft.client.gui.components.Button b
+						&& b.getMessage().getString().contains("Verschicken"))) throw new AssertionError("Verschicken-Knopf bei erhaltenem Brief");
+				button.onPress(new net.minecraft.client.input.KeyEvent(GLFW.GLFW_KEY_ENTER, 0, 0));
+			});
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("schreibstube-brief-im-editor");
+			ctx.runOnClient(mc -> {
+				if (!(mc.screen instanceof LetterScreen s)) throw new AssertionError("Editor nicht offen: " + mc.screen);
+				RichText t = s.editor().text();
+				if (!t.plain().equals("Liebe Grüße" + RichText.PAGE_BREAK + "Seite zwei")) throw new AssertionError("Brieftext: " + t.plain());
+				if (RichText.color(t.styleAt(0)) != RichText.colorOf(4)) throw new AssertionError("Farbe verloren: " + t.toLegacy('&'));
+				boolean backup = de.schreibstube.Drafts.list().stream().anyMatch(e -> e.name().startsWith("Entwurf vor Brief") && e.preview().equals("Mein Entwurf"));
+				if (!backup) throw new AssertionError("Alter Entwurf nicht gesichert: " + de.schreibstube.Drafts.list());
+				s.editor().setText(new RichText(), false);
+				mc.setScreen(null);
+			});
+			world.getServer().runCommand("item replace entity @a weapon.mainhand with minecraft:air");
+			ctx.waitTicks(3);
+
 			// Vorschau: Formatierung darf beim Zeilenumbruch nicht verrutschen
 			ctx.runOnClient(mc -> {
 				String page = "§9§l§oSchreiben klicken und den Brief danach mit Rechtsklick öffnen. Achte §rdabei auf drei Dinge:";

@@ -58,6 +58,7 @@ public class LetterScreen extends Screen {
 	private Component status;
 	private long statusUntil;
 	private boolean openDraftsOnTick;
+	private RichText opening;
 
 	public LetterScreen(Screen parent) {
 		super(Component.literal("Schreibstube"));
@@ -70,6 +71,7 @@ public class LetterScreen extends Screen {
 			editor = new RichTextEditor(font, this::onEdit);
 			editor.setText(Drafts.loadCurrent(), false);
 		}
+		if (opening != null) loadOpening();
 
 		int top = 42, bottom = height - 52;
 		int mainH = bottom - top;
@@ -195,6 +197,24 @@ public class LetterScreen extends Screen {
 		showStatus("Text übernommen – mit Strg+Z rückgängig.", ChatFormatting.DARK_GREEN);
 	}
 
+	/** Übernimmt den Text aus {@link #opening}; ein angefangener Entwurf wird vorher unter „Entwürfe“ gesichert. */
+	private void loadOpening() {
+		RichText old = editor.text();
+		String saved = null;
+		if (!old.isEmpty() && !old.contentEquals(opening)) {
+			try {
+				saved = Drafts.save("Entwurf vor Brief " + java.time.LocalDateTime.now()
+						.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm")), old);
+			} catch (java.io.IOException e) {
+				SchreibstubeClient.LOGGER.warn("Konnte den Entwurf nicht sichern", e);
+			}
+		}
+		editor.setText(opening, true);
+		opening = null;
+		showStatus(saved != null ? "Brief übernommen – dein Entwurf ist unter „Entwürfe“ gesichert." : "Brief übernommen.",
+				ChatFormatting.DARK_GREEN);
+	}
+
 	private void signature() {
 		Config cfg = Config.get();
 		if (hasShiftDown()) {
@@ -270,6 +290,12 @@ public class LetterScreen extends Screen {
 	/** Gleich nach dem Öffnen die Entwürfe zeigen. */
 	public LetterScreen openingDrafts() {
 		openDraftsOnTick = true;
+		return this;
+	}
+
+	/** Gleich nach dem Öffnen diesen Text in den Editor laden, z. B. einen erhaltenen Brief. */
+	public LetterScreen opening(RichText text) {
+		opening = text;
 		return this;
 	}
 

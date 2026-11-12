@@ -1,5 +1,10 @@
 # Changelog – Schreibstube
 
+## 0.1.1
+
+- Erhaltene Briefe in den Editor holen: Beim Lesen eines Briefs gibt es oben links den Knopf „✒ Im Editor öffnen“. Text, Farben und Seiten landen in der Schreibstube; dein bisheriger Entwurf wird vorher unter „Entwürfe“ gesichert
+- Erhaltene Briefe ohne „Zu …“ werden am Absender erkannt und nicht mehr für den eigenen angefangenen Brief gehalten (kein „Weiterschreiben“/„Verschicken“ mehr bei fremden Briefen)
+
 ## 0.1.0
 
 Erste Version.
