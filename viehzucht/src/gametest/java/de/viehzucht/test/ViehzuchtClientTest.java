@@ -81,6 +81,32 @@ public class ViehzuchtClientTest implements FabricClientGameTest {
 			});
 			ctx.takeScreenshot("viehzucht-5-zaupel-wartet");
 
+			// Scheren: Klick mit Schere, Server schert das Schaf, dann leuchtet es bis „Scherbar: Bereit“
+			ctx.runOnClient(mc -> {
+				Entity e = mc.crosshairPickEntity;
+				if (de.viehzucht.data.Shearing.glows(e)) throw new AssertionError("Leuchtet schon vor dem Scheren");
+				de.viehzucht.data.Shearing.onInteract(e, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SHEARS), false);
+			});
+			world.getServer().runCommand("execute as @e[tag=zaupel] run data merge entity @s {Sheared:1b}");
+			ctx.waitTicks(10);
+			ctx.runOnClient(mc -> {
+				Entity e = mc.crosshairPickEntity;
+				if (!de.viehzucht.data.Shearing.glows(e) || !mc.shouldEntityAppearGlowing(e)) throw new AssertionError("Geschorenes Schaf leuchtet nicht");
+				if (e.getTeamColor() != de.viehzucht.data.Shearing.COLOR) throw new AssertionError("Farbe: " + Integer.toHexString(e.getTeamColor()));
+				long left = AnimalStore.get(e.getUUID()).shearReadyAt() - System.currentTimeMillis();
+				if (left < AnimalInfo.SHEAR_MS - 60_000 || left > AnimalInfo.SHEAR_MS) throw new AssertionError("Wartezeit: " + left);
+			});
+			ctx.takeScreenshot("viehzucht-5b-zaupel-geschoren");
+			// Neue Info mit genauer Zeit: leuchtet weiter; „Bereit“: aus
+			click(ctx, "zaupel", List.of("- Zaupel", "⚥  Geschlecht: Schaf (Weiblich)", "🍽 Mast: 10/30", "✂ Scherbar: in 5h 59m"));
+			ctx.runOnClient(mc -> {
+				if (!de.viehzucht.data.Shearing.glows(mc.crosshairPickEntity)) throw new AssertionError("Leuchten nach neuer Info weg");
+			});
+			click(ctx, "zaupel", List.of("- Zaupel", "⚥  Geschlecht: Schaf (Weiblich)", "🍽 Mast: 30/30", "✂ Scherbar: Bereit"));
+			ctx.runOnClient(mc -> {
+				if (de.viehzucht.data.Shearing.glows(mc.crosshairPickEntity)) throw new AssertionError("Leuchtet trotz „Scherbar: Bereit“");
+			});
+
 			// Automatische Abfrage: neues Rind anvisieren, ohne Antwort einmal mit Schleichen nachfassen, dann Ruhe
 			world.getServer().runCommand("execute as @p at @s run summon cow ~ ~ ~-3 {NoAI:1b,Tags:[\"neu\"]," + name + "}");
 			int[] sentBefore = new int[1];

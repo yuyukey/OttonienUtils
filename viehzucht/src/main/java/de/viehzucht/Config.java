@@ -35,6 +35,8 @@ public final class Config {
 	public int offsetY = 0;
 	/** ♂/♀ an den Namen über dem Tier hängen. */
 	public boolean nametagGender = true;
+	/** Selbst geschorene Schafe leuchten lassen, bis sie wieder scherbar sind. */
+	public boolean glowSheared = true;
 	/** Analyse-Datei schreiben (nur zur Fehlersuche). */
 	public boolean analysis = false;
 	/** Nur auf Servern mit „ottonien“ in der Adresse. Für Tests im Einzelspieler auf false setzen. */

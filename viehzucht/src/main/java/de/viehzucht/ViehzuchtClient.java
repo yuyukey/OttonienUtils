@@ -3,6 +3,7 @@ package de.viehzucht;
 import com.mojang.blaze3d.platform.InputConstants;
 import de.viehzucht.data.AnimalStore;
 import de.viehzucht.data.AutoQuery;
+import de.viehzucht.data.Shearing;
 import de.viehzucht.data.Tracker;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import de.viehzucht.gui.HudPositionScreen;
@@ -61,6 +62,7 @@ public class ViehzuchtClient implements ClientModInitializer {
 		UseEntityCallback.EVENT.register((player, level, hand, entity, hit) -> {
 			if (level.isClientSide() && active) {
 				Tracker.onInteract(entity, player.isShiftKeyDown());
+				Shearing.onInteract(entity, player.getItemInHand(hand), player.isShiftKeyDown());
 				Analysis.onInteract(entity, player, hand.name());
 			}
 			return InteractionResult.PASS;
@@ -83,6 +85,9 @@ public class ViehzuchtClient implements ClientModInitializer {
 						.then(ClientCommandManager.literal("auto")
 								.then(ClientCommandManager.literal("an").executes(c -> setAuto(c.getSource(), true)))
 								.then(ClientCommandManager.literal("aus").executes(c -> setAuto(c.getSource(), false))))
+						.then(ClientCommandManager.literal("leuchten")
+								.then(ClientCommandManager.literal("an").executes(c -> setGlow(c.getSource(), true)))
+								.then(ClientCommandManager.literal("aus").executes(c -> setGlow(c.getSource(), false))))
 						.then(ClientCommandManager.literal("anpassen").executes(c -> {
 							openPositionScreen = true;
 							return 1;
@@ -142,6 +147,7 @@ public class ViehzuchtClient implements ClientModInitializer {
 		AnimalStore.tick();
 		if (Tracker.isAnimal(mc.crosshairPickEntity)) Tracker.seen(mc.crosshairPickEntity);
 		AutoQuery.tick(mc);
+		Shearing.tick();
 		Analysis.onLook(mc.crosshairPickEntity);
 	}
 
@@ -158,7 +164,7 @@ public class ViehzuchtClient implements ClientModInitializer {
 		say(src, "Viehzucht: " + AnimalStore.size() + " Tiere gemerkt, Overlay " + (Config.get().overlayEnabled ? "an" : "aus")
 				+ (Config.get().onlyOnOttonien && !active ? " (nur auf Ottonien)" : ""));
 		src.sendFeedback(Component.literal("Tier kurz anvisieren (oder Shift + Rechtsklick): die Mod holt die Infos, merkt sie sich und zählt die Zeiten weiter.").withStyle(ChatFormatting.GRAY));
-		src.sendFeedback(Component.literal("/viehzucht an|aus · anpassen · groesse <%> · verschieben <x> <y> · zuruecksetzen · auto an|aus · chat an|aus · vergessen · analyse").withStyle(ChatFormatting.GRAY));
+		src.sendFeedback(Component.literal("/viehzucht an|aus · anpassen · groesse <%> · verschieben <x> <y> · zuruecksetzen · auto an|aus · chat an|aus · leuchten an|aus · vergessen · analyse").withStyle(ChatFormatting.GRAY));
 		return 1;
 	}
 
@@ -180,6 +186,13 @@ public class ViehzuchtClient implements ClientModInitializer {
 		Config.get().autoQuery = on;
 		Config.get().save();
 		say(src, on ? "Tier-Infos werden beim Anvisieren automatisch abgefragt." : "Automatische Abfrage aus, Infos nur noch per Shift + Rechtsklick.");
+		return 1;
+	}
+
+	private static int setGlow(FabricClientCommandSource src, boolean on) {
+		Config.get().glowSheared = on;
+		Config.get().save();
+		say(src, on ? "Selbst geschorene Schafe leuchten, bis sie wieder scherbar sind." : "Geschorene Schafe leuchten nicht mehr.");
 		return 1;
 	}
 

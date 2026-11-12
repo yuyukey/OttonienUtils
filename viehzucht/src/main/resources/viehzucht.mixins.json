@@ -5,7 +5,9 @@
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"ClientPacketListenerMixin",
-		"EntityRendererMixin"
+		"EntityRendererMixin",
+		"EntityMixin",
+		"MinecraftMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

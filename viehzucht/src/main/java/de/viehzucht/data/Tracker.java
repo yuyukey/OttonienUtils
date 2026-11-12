@@ -124,6 +124,7 @@ public final class Tracker {
 		expected = null;
 		if (info == null || id == null) return;
 		info.keepObserved(AnimalStore.get(id));
+		Shearing.onCapture(id, info);
 		info.seenAt = now;
 		AnimalStore.put(id, info);
 		lastCaptured = id;

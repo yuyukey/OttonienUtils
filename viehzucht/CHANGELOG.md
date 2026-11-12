@@ -1,5 +1,9 @@
 # Changelog – Viehzucht
 
+## 0.1.2
+
+- Geschorene Schafe leuchten: Wer ein Schaf mit der Schere schert, sieht es golden umrandet, bis es wieder scherbar ist (laut Server-Info „Scherbar: in …“, sonst nach 6 Stunden). Die Tafel zeigt die Wartezeit unter „Scherbar“. Abschalten mit `/viehzucht leuchten aus`
+
 ## 0.1.1
 
 - Keine Tafel mehr für das eigene Reittier, solange du draufsitzt

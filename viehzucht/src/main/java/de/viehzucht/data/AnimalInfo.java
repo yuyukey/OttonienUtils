@@ -46,6 +46,8 @@ public final class AnimalInfo {
 	public long bornAt;
 	/** Ohne Shift angeklickt (z.B. gefüttert), nachdem die Info kam. */
 	public long touchedAt;
+	/** Selbst geschoren (Schere benutzt und das Schaf war danach geschoren). */
+	public long shearedAt;
 	/** Zuletzt gesehen, zum Aufräumen alter Einträge. */
 	public long seenAt;
 
@@ -107,6 +109,31 @@ public final class AnimalInfo {
 		lovedAt = old.lovedAt;
 		bredAt = old.bredAt;
 		bornAt = old.bornAt;
+		shearedAt = old.shearedAt;
+	}
+
+	/** Auf Ottonien ist ein Schaf 6 Stunden nach dem Scheren wieder scherbar. */
+	public static final long SHEAR_MS = 6 * 3_600_000L;
+
+	/**
+	 * Wann das selbst geschorene Schaf wieder scherbar ist, 0 wenn es nicht wartet. Nach dem Scheren zählt die Zeit
+	 * aus der nächsten Info des Servers („Scherbar: in 5h 59m“), „Bereit“ beendet das Warten, sonst gilt die Tabelle.
+	 */
+	public long shearReadyAt() {
+		if (shearedAt <= 0) return 0;
+		Line l = capturedAt > shearedAt ? line("Scherbar") : null;
+		if (l != null) {
+			long d = parseDuration(l.value);
+			if (d >= 0) return capturedAt + d;
+			if (l.value.toLowerCase(Locale.ROOT).startsWith("bereit")) return 0;
+		}
+		return shearedAt + SHEAR_MS;
+	}
+
+	/** Die Wartezeit nach dem Scheren ist nur geschätzt, weil noch keine neue Info kam. */
+	public boolean shearEstimated() {
+		Line l = capturedAt > shearedAt ? line("Scherbar") : null;
+		return l == null || parseDuration(l.value) < 0;
 	}
 
 	// ---------------------------------------------------------------- Zeiten

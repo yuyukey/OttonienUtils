@@ -186,6 +186,10 @@ public final class InfoHud {
 
 	/** Melkbar, Scherbar, Mastverlust, Leben … mit live laufender Zeit. */
 	private static Row lineRow(AnimalInfo data, AnimalInfo.Line l, long now) {
+		// Selbst geschoren: Wartezeit zeigen, auch wenn die letzte Info noch „Bereit“ sagt
+		long shearReady = l.key.equalsIgnoreCase("Scherbar") ? data.shearReadyAt() : 0;
+		if (shearReady > now) return new Row(l.key, "in " + (data.shearEstimated() ? "~" : "") + AnimalInfo.formatDuration(shearReady - now)
+				+ (data.shearEstimated() ? " (geschätzt)" : ""), YELLOW, -1, -1);
 		List<AnimalInfo.Part> parts = data.parts(l.value, now);
 		boolean lossLine = l.key.toLowerCase(Locale.ROOT).startsWith("mastverlust");
 		StringBuilder text = new StringBuilder();
