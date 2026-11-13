@@ -1,5 +1,9 @@
 # Changelog – Viehzucht
 
+## 0.1.5
+
+- Nicht nur Kühe: Alle Zuchttiere (Schafe, Ziegen, Schweine, Pferde, Esel …) leuchten nach einer Paarung rosa, bis sie sich wieder paaren können. Geschorene Schafe bleiben golden
+
 ## 0.1.4
 
 - Gepaarte Kühe leuchten jetzt auch, wenn die Mod die Paarung nicht selbst gesehen hat: Nennt der Server unter „Paarungsbereit“ eine Wartezeit, ist die Kuh rosa umrandet

@@ -29,7 +29,7 @@ Sitzt du auf einem Pferd, zeigt die Tafel dein eigenes Reittier nicht an.
 
 Siehst du Herzchen über zwei Tieren und erscheint daneben ein Jungtier, merkt sich die Mod die Paarung. Sie zeigt dann die Wartezeit aus Ottoniens Tabelle als Schätzung an, bis du das Tier wieder anklickst.
 
-Gepaarte Kühe sind rosa umrandet, bis sie sich wieder paaren können, auch wenn nur die Info des Servers eine Wartezeit nennt. Selbst geschorene Schafe sind golden umrandet, bis sie wieder scherbar sind.
+Gepaarte Tiere (Rinder, Schafe, Ziegen, Schweine, Pferde …) sind rosa umrandet, bis sie sich wieder paaren können, auch wenn nur die Info des Servers eine Wartezeit nennt. Selbst geschorene Schafe sind golden umrandet, bis sie wieder scherbar sind.
 
 ## Befehle
 
@@ -42,7 +42,7 @@ Gepaarte Kühe sind rosa umrandet, bis sie sich wieder paaren können, auch wenn
 | `/viehzucht verschieben <x> <y>` | Tafel um so viele Pixel verschieben, z. B. `verschieben 0 -40` schiebt sie nach oben |
 | `/viehzucht zuruecksetzen` | Tafel wieder neben dem Fadenkreuz in normaler Größe |
 | `/viehzucht auto an` / `aus` | Automatische Abfrage beim Anvisieren ein- oder ausschalten |
-| `/viehzucht leuchten an` / `aus` | Umrandung für gepaarte Kühe und geschorene Schafe ein- oder ausschalten |
+| `/viehzucht leuchten an` / `aus` | Umrandung für gepaarte Tiere und geschorene Schafe ein- oder ausschalten |
 | `/viehzucht chat aus` / `an` | Die Tier-Infos des Servers im Chat ausblenden, weil sie auf der Tafel stehen, oder wieder anzeigen |
 | `/viehzucht vergessen` | Alle gemerkten Tiere auf diesem Server löschen |
 | `/viehzucht analyse an` / `aus` / `leeren` | Zur Fehlersuche aufzeichnen, was der Server über Tiere schickt (`viehzucht-analyse.txt` im Spielordner) |
@@ -60,7 +60,7 @@ Gepaarte Kühe sind rosa umrandet, bis sie sich wieder paaren können, auch wenn
 | `autoRefreshSeconds` | `60` | Infos, die älter sind, beim Anvisieren neu abfragen |
 | `nametagGender` | `true` | ♂ / ♀ hinter den Namen über dem Tier |
 | `glowSheared` | `true` | Selbst geschorene Schafe umranden |
-| `glowBred` | `true` | Gepaarte Kühe umranden |
+| `glowBred` | `true` | Gepaarte Tiere umranden |
 | `hideChatInfo` | `false` | Auch die Antworten auf eigene Klicks im Chat ausblenden |
 | `analysis` | `false` | Analyse-Datei schreiben |
 | `onlyOnOttonien` | `true` | Nur auf Servern mit „ottonien“ in der Adresse |

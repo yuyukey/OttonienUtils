@@ -37,7 +37,7 @@ public final class Config {
 	public boolean nametagGender = true;
 	/** Selbst geschorene Schafe leuchten lassen, bis sie wieder scherbar sind. */
 	public boolean glowSheared = true;
-	/** Kühe nach einer beobachteten Paarung leuchten lassen, bis sie sich wieder paaren können. */
+	/** Zuchttiere nach einer Paarung leuchten lassen, bis sie sich wieder paaren können. */
 	public boolean glowBred = true;
 	/** Analyse-Datei schreiben (nur zur Fehlersuche). */
 	public boolean analysis = false;

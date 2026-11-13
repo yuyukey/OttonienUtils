@@ -131,6 +131,18 @@ public class ViehzuchtClientTest implements FabricClientGameTest {
 				if (!de.viehzucht.data.Breeding.glows(mc.crosshairPickEntity)) throw new AssertionError("Bulle mit Wartezeit leuchtet nicht");
 			});
 			click(ctx, "bulle", List.of("- Rotvieh Rind", "⚥  Geschlecht: Bulle (Männlich)", "🍽 Mast: 80/80", "❤ Paarungsbereit: Bereit"));
+			// Auch andere Tiere: Schaf nach Paarung rosa, solange es nicht geschoren leuchtet
+			click(ctx, "zaupel", List.of("- Zaupel", "⚥  Geschlecht: Schaf (Weiblich)", "🍽 Mast: 0/30", "✂ Scherbar: Bereit", "❤ Paarungsbereit: in 11h 59m | Mast 0/30"));
+			ctx.runOnClient(mc -> {
+				Entity e = mc.crosshairPickEntity;
+				if (!de.viehzucht.data.Breeding.glows(e) || e.getTeamColor() != de.viehzucht.data.Breeding.COLOR) throw new AssertionError("Gepaartes Schaf leuchtet nicht rosa");
+			});
+			click(ctx, "zaupel", List.of("- Zaupel", "⚥  Geschlecht: Schaf (Weiblich)", "🍽 Mast: 30/30", "✂ Scherbar: Bereit", "❤ Paarungsbereit: Bereit"));
+			look(ctx, "kalb");
+			ctx.runOnClient(mc -> {
+				AnimalStore.getOrCreate(mc.crosshairPickEntity.getUUID()).bredAt = System.currentTimeMillis();
+				if (de.viehzucht.data.Breeding.glows(mc.crosshairPickEntity)) throw new AssertionError("Kalb leuchtet");
+			});
 			// Herzchen als Partikel vom Server zählen als verliebt
 			world.getServer().runCommand("execute as @e[tag=kuh] at @s run particle heart ~ ~1.2 ~ 0.3 0.3 0.3 0 3 force");
 			ctx.waitTicks(5);

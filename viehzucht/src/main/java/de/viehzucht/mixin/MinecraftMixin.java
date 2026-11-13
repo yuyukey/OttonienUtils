@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** Selbst geschorene Schafe und gepaarte Kühe leuchten, bis sie wieder scherbar bzw. paarungsbereit sind. */
+/** Selbst geschorene Schafe und gepaarte Tiere leuchten, bis sie wieder scherbar bzw. paarungsbereit sind. */
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
 	@Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)

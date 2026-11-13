@@ -193,7 +193,7 @@ public class ViehzuchtClient implements ClientModInitializer {
 		Config.get().glowSheared = on;
 		Config.get().glowBred = on;
 		Config.get().save();
-		say(src, on ? "Selbst geschorene Schafe und gepaarte Kühe leuchten, bis sie wieder können." : "Geschorene Schafe und gepaarte Kühe leuchten nicht mehr.");
+		say(src, on ? "Selbst geschorene Schafe und gepaarte Tiere leuchten, bis sie wieder können." : "Geschorene Schafe und gepaarte Tiere leuchten nicht mehr.");
 		return 1;
 	}
 
