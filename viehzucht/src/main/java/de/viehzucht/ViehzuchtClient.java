@@ -191,8 +191,9 @@ public class ViehzuchtClient implements ClientModInitializer {
 
 	private static int setGlow(FabricClientCommandSource src, boolean on) {
 		Config.get().glowSheared = on;
+		Config.get().glowBred = on;
 		Config.get().save();
-		say(src, on ? "Selbst geschorene Schafe leuchten, bis sie wieder scherbar sind." : "Geschorene Schafe leuchten nicht mehr.");
+		say(src, on ? "Selbst geschorene Schafe und gepaarte Kühe leuchten, bis sie wieder können." : "Geschorene Schafe und gepaarte Kühe leuchten nicht mehr.");
 		return 1;
 	}
 

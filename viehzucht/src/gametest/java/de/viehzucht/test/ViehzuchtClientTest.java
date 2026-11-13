@@ -107,6 +107,25 @@ public class ViehzuchtClientTest implements FabricClientGameTest {
 				if (de.viehzucht.data.Shearing.glows(mc.crosshairPickEntity)) throw new AssertionError("Leuchtet trotz „Scherbar: Bereit“");
 			});
 
+			// Gepaarte Kuh leuchtet rosa, bis der Server keine Wartezeit mehr nennt
+			look(ctx, "kuh");
+			ctx.runOnClient(mc -> {
+				Entity e = mc.crosshairPickEntity;
+				if (de.viehzucht.data.Breeding.glows(e)) throw new AssertionError("Kuh leuchtet schon vor der Paarung");
+				AnimalStore.get(e.getUUID()).bredAt = System.currentTimeMillis();
+				if (!de.viehzucht.data.Breeding.glows(e) || !mc.shouldEntityAppearGlowing(e)) throw new AssertionError("Gepaarte Kuh leuchtet nicht");
+				if (e.getTeamColor() != de.viehzucht.data.Breeding.COLOR) throw new AssertionError("Kuh-Farbe: " + Integer.toHexString(e.getTeamColor()));
+			});
+			ctx.takeScreenshot("viehzucht-5c-kuh-gepaart");
+			click(ctx, "kuh", List.of("- Rotvieh Rind", "⚥  Geschlecht: Kuh (Weiblich)", "🍽 Mast: 0/80", "❤ Paarungsbereit: in 23h 59m | Mast 0/80"));
+			ctx.runOnClient(mc -> {
+				if (!de.viehzucht.data.Breeding.glows(mc.crosshairPickEntity)) throw new AssertionError("Kuh-Leuchten nach neuer Info weg");
+			});
+			click(ctx, "kuh", List.of("- Rotvieh Rind", "⚥  Geschlecht: Kuh (Weiblich)", "🍽 Mast: 10/80", "❤ Paarungsbereit: Mast 10/80"));
+			ctx.runOnClient(mc -> {
+				if (de.viehzucht.data.Breeding.glows(mc.crosshairPickEntity)) throw new AssertionError("Kuh leuchtet trotz abgelaufener Wartezeit");
+			});
+
 			// Automatische Abfrage: neues Rind anvisieren, ohne Antwort einmal mit Schleichen nachfassen, dann Ruhe
 			world.getServer().runCommand("execute as @p at @s run summon cow ~ ~ ~-3 {NoAI:1b,Tags:[\"neu\"]," + name + "}");
 			int[] sentBefore = new int[1];

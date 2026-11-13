@@ -161,6 +161,7 @@ public final class Tracker {
 		AnimalInfo child = AnimalStore.getOrCreate(e.getUUID());
 		child.bornAt = now;
 		child.seenAt = now;
+		AnimalStore.markDirty();
 	}
 
 	/** Für die Anzeige: zuletzt gesehen merken (nur ab und zu speichern). */

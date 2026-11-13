@@ -136,6 +136,23 @@ public final class AnimalInfo {
 		return l == null || parseDuration(l.value) < 0;
 	}
 
+	/**
+	 * Wann das Tier nach der beobachteten Paarung wieder kann, 0 wenn es nicht wartet. Kam danach eine Info
+	 * des Servers, zählt deren Zeit („Paarungsbereit: in 23h 59m | Mast 0/80“); ohne Zeit darin wartet es nicht
+	 * mehr. Sonst gilt die Wartezeit aus der Tabelle.
+	 */
+	public long breedReadyAt(long cooldownMs) {
+		if (bredAt <= 0) return 0;
+		Line l = capturedAt > bredAt ? line("Paarungsbereit", "Zuchtbereit") : null;
+		if (l == null) return bredAt + cooldownMs;
+		for (String piece : l.value.split("\\s*\\|\\s*")) {
+			if (piece.toLowerCase(Locale.ROOT).contains("wächst")) continue;
+			long d = parseDuration(piece);
+			if (d > 0) return capturedAt + d;
+		}
+		return 0;
+	}
+
 	// ---------------------------------------------------------------- Zeiten
 
 	public static long parseDuration(String text) {

@@ -1,5 +1,9 @@
 # Changelog – Viehzucht
 
+## 0.1.3
+
+- Gepaarte Kühe leuchten: Sieht die Mod eine Paarung, ist die Kuh rosa umrandet, bis sie sich wieder paaren kann (laut Server-Info „Paarungsbereit: in …“, sonst nach der Wartezeit aus der Tabelle). `/viehzucht leuchten aus` schaltet auch das ab
+
 ## 0.1.2
 
 - Geschorene Schafe leuchten: Wer ein Schaf mit der Schere schert, sieht es golden umrandet, bis es wieder scherbar ist (laut Server-Info „Scherbar: in …“, sonst nach 6 Stunden). Die Tafel zeigt die Wartezeit unter „Scherbar“. Abschalten mit `/viehzucht leuchten aus`
