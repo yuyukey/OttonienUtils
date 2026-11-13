@@ -139,6 +139,18 @@ public final class Tracker {
 		info.seenAt = info.lovedAt;
 	}
 
+	/** Herzchen als Partikel vom Server (statt Ereignis 18): dem Tier zuordnen, aus dem sie aufsteigen. */
+	public static void onParticle(net.minecraft.core.particles.ParticleOptions particle, double x, double y, double z) {
+		if (particle.getType() != net.minecraft.core.particles.ParticleTypes.HEART) return;
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return;
+		net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(x - 1.5, y - 2.5, z - 1.5, x + 1.5, y + 1, z + 1.5);
+		Entity best = null;
+		for (Entity n : mc.level.getEntities((Entity) null, box, n -> n instanceof AgeableMob a && !a.isBaby()))
+			if (best == null || n.distanceToSqr(x, y, z) < best.distanceToSqr(x, y, z)) best = n;
+		if (best != null) onEntityEvent(best, (byte) 18);
+	}
+
 	/** Neues Tier in der Welt: ist es ein Jungtier neben verliebten Eltern, war das eine Paarung. */
 	public static void onEntityLoad(Entity e) {
 		if (!(e instanceof AgeableMob baby) || !baby.isBaby()) return;

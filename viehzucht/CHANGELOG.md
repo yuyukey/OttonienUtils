@@ -1,5 +1,10 @@
 # Changelog – Viehzucht
 
+## 0.1.4
+
+- Gepaarte Kühe leuchten jetzt auch, wenn die Mod die Paarung nicht selbst gesehen hat: Nennt der Server unter „Paarungsbereit“ eine Wartezeit, ist die Kuh rosa umrandet
+- Herzchen, die Ottonien als Partikel schickt, werden jetzt erkannt (Status „verliebt“ und Paarungserkennung)
+
 ## 0.1.3
 
 - Gepaarte Kühe leuchten: Sieht die Mod eine Paarung, ist die Kuh rosa umrandet, bis sie sich wieder paaren kann (laut Server-Info „Paarungsbereit: in …“, sonst nach der Wartezeit aus der Tabelle). `/viehzucht leuchten aus` schaltet auch das ab

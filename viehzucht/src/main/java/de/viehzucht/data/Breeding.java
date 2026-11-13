@@ -5,7 +5,10 @@ import de.viehzucht.ViehzuchtClient;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
-/** Kühe, deren Paarung die Mod gesehen hat, leuchten, bis sie sich wieder paaren können. */
+/**
+ * Kühe nach einer Paarung leuchten, bis sie sich wieder paaren können: sobald die Mod die Paarung sieht
+ * (Herzchen, Kalb daneben) oder der Server unter „Paarungsbereit“ eine Wartezeit nennt.
+ */
 public final class Breeding {
 	/** Farbe des Leuchtens. */
 	public static final int COLOR = 0xFF6FA8;
@@ -15,11 +18,11 @@ public final class Breeding {
 	private Breeding() {
 	}
 
-	/** Für das Leuchten: Kuh nach beobachteter Paarung, Wartezeit noch nicht um. */
+	/** Für das Leuchten: Kuh nach einer Paarung, Wartezeit noch nicht um. */
 	public static boolean glows(Entity e) {
 		if (e == null || e.getType() != EntityType.COW || !ViehzuchtClient.isActive() || !Config.get().glowBred) return false;
 		AnimalInfo info = AnimalStore.get(e.getUUID());
-		if (info == null || info.bredAt <= 0) return false;
+		if (info == null) return false;
 		Species species = Species.byName(info.name != null ? info.name : e.getCustomName() != null ? e.getCustomName().getString() : null);
 		return info.breedReadyAt(species != null ? species.cooldownMs() : COW_COOLDOWN_MS) > System.currentTimeMillis();
 	}

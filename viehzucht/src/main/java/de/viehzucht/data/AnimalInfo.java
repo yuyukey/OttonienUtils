@@ -137,14 +137,14 @@ public final class AnimalInfo {
 	}
 
 	/**
-	 * Wann das Tier nach der beobachteten Paarung wieder kann, 0 wenn es nicht wartet. Kam danach eine Info
-	 * des Servers, zählt deren Zeit („Paarungsbereit: in 23h 59m | Mast 0/80“); ohne Zeit darin wartet es nicht
-	 * mehr. Sonst gilt die Wartezeit aus der Tabelle.
+	 * Wann das Tier nach einer Paarung wieder kann, 0 wenn es nicht wartet. Wurde die Paarung nach der letzten
+	 * Info beobachtet, gilt die Wartezeit aus der Tabelle. Sonst zählt die Zeit aus der Info des Servers
+	 * („Paarungsbereit: in 23h 59m | Mast 0/80“), die er nur nach einer Paarung nennt.
 	 */
 	public long breedReadyAt(long cooldownMs) {
-		if (bredAt <= 0) return 0;
-		Line l = capturedAt > bredAt ? line("Paarungsbereit", "Zuchtbereit") : null;
-		if (l == null) return bredAt + cooldownMs;
+		if (bredAt > capturedAt) return bredAt + cooldownMs;
+		Line l = capturedAt > 0 ? line("Paarungsbereit", "Zuchtbereit") : null;
+		if (l == null) return 0;
 		for (String piece : l.value.split("\\s*\\|\\s*")) {
 			if (piece.toLowerCase(Locale.ROOT).contains("wächst")) continue;
 			long d = parseDuration(piece);

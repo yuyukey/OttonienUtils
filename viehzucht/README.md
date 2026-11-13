@@ -29,7 +29,7 @@ Sitzt du auf einem Pferd, zeigt die Tafel dein eigenes Reittier nicht an.
 
 Siehst du Herzchen über zwei Tieren und erscheint daneben ein Jungtier, merkt sich die Mod die Paarung. Sie zeigt dann die Wartezeit aus Ottoniens Tabelle als Schätzung an, bis du das Tier wieder anklickst.
 
-Gepaarte Kühe sind rosa umrandet, bis sie sich wieder paaren können. Selbst geschorene Schafe sind golden umrandet, bis sie wieder scherbar sind.
+Gepaarte Kühe sind rosa umrandet, bis sie sich wieder paaren können, auch wenn nur die Info des Servers eine Wartezeit nennt. Selbst geschorene Schafe sind golden umrandet, bis sie wieder scherbar sind.
 
 ## Befehle
 

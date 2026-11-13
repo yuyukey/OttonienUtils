@@ -125,6 +125,20 @@ public class ViehzuchtClientTest implements FabricClientGameTest {
 			ctx.runOnClient(mc -> {
 				if (de.viehzucht.data.Breeding.glows(mc.crosshairPickEntity)) throw new AssertionError("Kuh leuchtet trotz abgelaufener Wartezeit");
 			});
+			// Paarung nicht gesehen, aber der Server nennt eine Wartezeit: leuchtet auch
+			click(ctx, "bulle", List.of("- Rotvieh Rind", "⚥  Geschlecht: Bulle (Männlich)", "🍽 Mast: 0/80", "❤ Paarungsbereit: in 20h 3m | Mast 0/80"));
+			ctx.runOnClient(mc -> {
+				if (!de.viehzucht.data.Breeding.glows(mc.crosshairPickEntity)) throw new AssertionError("Bulle mit Wartezeit leuchtet nicht");
+			});
+			click(ctx, "bulle", List.of("- Rotvieh Rind", "⚥  Geschlecht: Bulle (Männlich)", "🍽 Mast: 80/80", "❤ Paarungsbereit: Bereit"));
+			// Herzchen als Partikel vom Server zählen als verliebt
+			world.getServer().runCommand("execute as @e[tag=kuh] at @s run particle heart ~ ~1.2 ~ 0.3 0.3 0.3 0 3 force");
+			ctx.waitTicks(5);
+			look(ctx, "kuh");
+			ctx.runOnClient(mc -> {
+				long loved = AnimalStore.get(mc.crosshairPickEntity.getUUID()).lovedAt;
+				if (System.currentTimeMillis() - loved > 5_000) throw new AssertionError("Herzchen-Partikel nicht erkannt");
+			});
 
 			// Automatische Abfrage: neues Rind anvisieren, ohne Antwort einmal mit Schleichen nachfassen, dann Ruhe
 			world.getServer().runCommand("execute as @p at @s run summon cow ~ ~ ~-3 {NoAI:1b,Tags:[\"neu\"]," + name + "}");
