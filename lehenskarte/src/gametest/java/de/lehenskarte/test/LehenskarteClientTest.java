@@ -22,6 +22,10 @@ public class LehenskarteClientTest implements FabricClientGameTest {
 			if (geo.shapes().size() != 65) throw new AssertionError("Lehen-Anzahl: " + geo.shapes().size());
 			LehenGeometry.Shape merdorf = geo.at(-159, 2791);
 			if (merdorf == null || !merdorf.id().equals("lehen_6")) throw new AssertionError("Merdorf nicht erkannt: " + merdorf);
+			// Türfdorf (Taunestein) reicht bis an Altenessen; der Zipfel von Eugensbrück bleibt
+			LehenGeometry.Shape tail = geo.at(-540, -200), east = geo.at(-540, 150);
+			if (tail == null || !tail.id().equals("lehen_28")) throw new AssertionError("Eugensbrück-Zipfel: " + tail);
+			if (east == null || !east.id().equals("lehen_24")) throw new AssertionError("Türfdorf-Erweiterung: " + east);
 			int[] colors = new int[256];
 			if (!LehenState.chunkColors(-159 >> 4, 2791 >> 4, colors, true) && LehenState.isActive()) throw new AssertionError("Keine Farben");
 		});

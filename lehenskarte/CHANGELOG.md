@@ -1,5 +1,10 @@
 # Changelog – Lehenskarte
 
+## 0.1.6
+
+- Neue Grenze von Taunestein (Türfdorf): reicht jetzt bis an Ährstein, die Grenze zu Holdern verläuft gerade nach unten
+- Chat-Meldungen nennen die Gefolge statt der Lehen (das Lehen steht im Hover-Text)
+
 ## 0.1.5
 
 - Grenzen auch in Xaero's Minimap: Grenzen zwischen Machtbereichen hell mit dunklem Rand, Grenzen innerhalb dünner. Abschaltbar in den Einstellungen („Grenzen in der Minimap“)

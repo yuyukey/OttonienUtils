@@ -132,8 +132,12 @@ public class LehenskarteClient implements ClientModInitializer {
 				}
 				continue;
 			}
-			if (b == null) lines.add(Component.literal(lehen + " ist jetzt frei (vorher " + nameA + ")").withStyle(ChatFormatting.GRAY));
-			else lines.add(Component.literal(lehen + " gehört jetzt " + nameB + (nameA != null ? " (vorher " + nameA + ")" : "")).withStyle(ChatFormatting.GRAY));
+			// Gefolge statt Land nennen; das Lehen steht im Hover-Text
+			String text = b == null ? nameA + " hat sein Lehen verlassen"
+					: nameA == null ? nameB + " hat ein Lehen übernommen"
+					: nameB + " hat das Lehen von " + nameA + " übernommen";
+			lines.add(Component.literal(text).withStyle(st -> st.withColor(ChatFormatting.GRAY)
+					.withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(Component.literal("Lehen: " + lehen)))));
 		}
 		if (lines.isEmpty()) return;
 		mc.player.displayClientMessage(Component.literal("[Lehenskarte] Änderungen bei den Lehen:").withStyle(ChatFormatting.GOLD), false);
